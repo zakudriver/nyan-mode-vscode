@@ -62,9 +62,9 @@ export const createNyan = (): (() => { dispose(): void }) => {
   const handleHideNyan = debounce(() => nyanBar.hide());
 
   const onDidChange =
-    nyanAction !== "range"
-      ? window.onDidChangeTextEditorSelection
-      : window.onDidChangeTextEditorVisibleRanges;
+    nyanAction === "range"
+      ? window.onDidChangeTextEditorVisibleRanges
+      : window.onDidChangeTextEditorSelection;
 
   return () => {
     updateNyan();
