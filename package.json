@@ -2,7 +2,7 @@
   "name": "nyan-mode",
   "displayName": "nyan-mode",
   "description": "emacs nyan-mode on vscode",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "zakudriver",
   "engines": {
     "vscode": "^1.70.0"
