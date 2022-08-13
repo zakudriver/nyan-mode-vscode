@@ -1,4 +1,4 @@
-# nyan-mode
+# [nyan-mode](https://github.com/zakudriver/nyan-mode-vscode)
 
 >For some friends who like nyan but don't use emacs.
 

@@ -4,6 +4,7 @@
   "description": "emacs nyan-mode on vscode",
   "version": "1.0.0",
   "publisher": "zakudriver",
+  "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
     "vscode": "^1.70.0"
   },
