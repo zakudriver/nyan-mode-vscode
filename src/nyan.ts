@@ -67,7 +67,7 @@ export const createNyan = (): (() => { dispose(): void }) => {
       : window.onDidChangeTextEditorSelection;
 
   return () => {
-    updateNyan();
+    handleUpdateNyan();
 
     onDidChange(handleUpdateNyan);
 
