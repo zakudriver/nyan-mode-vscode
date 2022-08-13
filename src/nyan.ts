@@ -12,7 +12,7 @@ export const createNyan = (): (() => { dispose(): void }) => {
     nyanDisplayPercent = false,
     nyanHeader = " -",
     nyanFooter = "| ",
-    nyanAction = "range",
+    nyanAction = "line",
   } = getConfig([
     "nyanDisable",
     "nyanAlign",

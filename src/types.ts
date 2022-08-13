@@ -29,4 +29,6 @@ type TuplifyUnion<
   N = [T] extends [never] ? true : false
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
 
-export type NyanModeOptionsKeysTuple = TuplifyUnion<keyof NyanModeOptions>;
+export type NyanModeOptionsKeysTuple = TuplifyUnion<
+  keyof Required<NyanModeOptions>
+>;

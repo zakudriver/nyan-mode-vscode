@@ -6,7 +6,7 @@
   "publisher": "zakudriver",
   "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.65.x"
   },
   "categories": [
     "Other"
