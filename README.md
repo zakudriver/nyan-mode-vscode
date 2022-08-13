@@ -1,4 +1,4 @@
-# nyan-mode README
+# nyan-mode
 
 >For some friends who like nyan but don't use emacs.
 
