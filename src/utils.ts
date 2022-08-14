@@ -1,4 +1,4 @@
-import { NyanModeOptionsKeysTuple, NyanModeOptions } from "./types";
+import { NyanModeOptions } from "./types";
 import { workspace } from "vscode";
 
 export const timesReduce = <T>(
@@ -17,18 +17,22 @@ export const makePercent = (arg: number): string =>
   `${Math.round(arg * 1000) / 10}%`;
 
 export const getConfig = (
-  tup: NyanModeOptionsKeysTuple,
-  configPrefix = "nyanMode"
+  init: NyanModeOptions,
+  prefix: string
 ): NyanModeOptions => {
-  const config = workspace.getConfiguration(configPrefix);
+  const config = workspace.getConfiguration(prefix);
 
-  return tup.reduce(
-    (prev, cur) => ({
+  return Object.keys(init).reduce((prev, cur) => {
+    const conf = config.get(cur);
+
+    return {
       ...prev,
-      [cur]: config.get(cur),
-    }),
-    {} as NyanModeOptions
-  );
+      [cur]:
+        typeof conf === typeof init[cur as keyof NyanModeOptions]
+          ? conf
+          : init[cur as keyof NyanModeOptions],
+    };
+  }, {} as NyanModeOptions);
 };
 
 export const debounce = (cb: () => void, time = 50) => {

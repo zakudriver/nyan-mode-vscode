@@ -51,6 +51,11 @@ Now nothings.
 
 Initial release ...
 
+### 1.1.1
+
+When modify settings.json, nyan-mode it will change accordingly.
+And fix default configs bugs. 
+
 ---
 
 **Enjoy!**

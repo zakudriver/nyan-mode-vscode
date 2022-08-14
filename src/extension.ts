@@ -6,9 +6,9 @@ import { createNyan } from "./nyan";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate({ subscriptions }: vscode.ExtensionContext) {
-  const run = createNyan();
+  const dis = createNyan();
 
-  subscriptions.push(run());
+  subscriptions.push(dis);
 }
 
 // this method is called when your extension is deactivated
