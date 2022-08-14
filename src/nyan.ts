@@ -7,7 +7,7 @@ import {
 } from "vscode";
 import { timesReduce, makePercent, debounce, getConfig } from "./utils";
 import { NyanModeOptions } from "./types";
-import { defConf, confPrefix, rateLines } from "./config";
+import { defConf, confPrefix } from "./config";
 
 const configObservable = (
   init: NyanModeOptions,
@@ -41,6 +41,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     nyanHeader,
     nyanFooter,
     nyanAction,
+    nyanFaceCurve,
   }: NyanModeOptions) => {
     const nyanBar = window.createStatusBarItem(
       nyanAlign === "right"
@@ -68,6 +69,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
         nyanLength,
         nyanHeader,
         nyanFooter,
+        nyanFaceCurve,
       })(($, $1) => (nyanDisplayPercent ? `${$}  ${$1}` : $));
 
       nyanBar.color = nyanColor;
@@ -109,7 +111,6 @@ const lineAction = ({ document, selection }: TextEditor): number =>
   document.lineCount - 1 ? selection.active.line / (document.lineCount - 1) : 0;
 
 const rangeAction = ({ visibleRanges, document }: TextEditor): number => {
-  const range = visibleRanges;
   if (visibleRanges.length) {
     const diff = visibleRanges[0].end.line - visibleRanges[0].start.line;
     const startLine = visibleRanges[0].start.line;
@@ -121,7 +122,7 @@ const rangeAction = ({ visibleRanges, document }: TextEditor): number => {
   return 1;
 };
 
-const nyanFace = (rate: number, lines = rateLines): string => {
+const nyanFace = (rate: number, lines: Array<[string, number]>): string => {
   const [face] = lines.find(([, v]) => rate <= v) || lines[lines.length - 1];
 
   return face;
@@ -133,6 +134,7 @@ const drawNyan = (
     nyanLength,
     nyanHeader,
     nyanFooter,
+    nyanFaceCurve,
   }: Omit<
     NyanModeOptions,
     | "nyanDisable"
@@ -156,7 +158,7 @@ const drawNyan = (
     ""
   );
 
-  const face = nyanFace(rate);
+  const face = nyanFace(rate, nyanFaceCurve);
 
   return (segmentFn: (nyanStr: string, percentStr: string) => string) => {
     const percent = makePercent(rate);

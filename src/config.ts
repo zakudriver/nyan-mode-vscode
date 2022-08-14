@@ -1,4 +1,3 @@
-import { X509Certificate } from "crypto";
 import { NyanModeOptions } from "./types";
 
 export const defConf: NyanModeOptions = {
@@ -11,13 +10,12 @@ export const defConf: NyanModeOptions = {
   nyanHeader: " -",
   nyanFooter: "| ",
   nyanAction: "line",
+  nyanFaceCurve: [
+    ["(*^ｰﾟ)", 0.25],
+    ["( ^ｰ^)", 0.5],
+    ["(^ｰ^ )", 0.75],
+    ["(ﾟｰ^*)", 1],
+  ],
 };
 
 export const confPrefix = "nyanMode";
-
-export const rateLines = [
-  ["(*^ｰﾟ)", 0.25],
-  ["( ^ｰ^)", 0.5],
-  ["(^ｰ^ )", 0.75],
-  ["(ﾟｰ^*)", 1],
-] as const;

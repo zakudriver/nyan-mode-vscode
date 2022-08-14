@@ -8,4 +8,5 @@ export interface NyanModeOptions {
   nyanHeader: string;
   nyanFooter: string;
   nyanAction: "line" | "range";
+  nyanFaceCurve: Array<[string, number]>;
 }

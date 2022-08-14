@@ -22,15 +22,33 @@ export const getConfig = (
 ): NyanModeOptions => {
   const config = workspace.getConfiguration(prefix);
 
+  const checkType = (
+    conf: NyanModeOptions[keyof NyanModeOptions] | undefined,
+    key: keyof NyanModeOptions
+  ): boolean => {
+    if (key === "nyanFaceCurve" && Array.isArray(conf)) {
+      const [face, num] = init.nyanFaceCurve[0].map((it) => typeof it);
+
+      return (
+        !!conf.length &&
+        conf.every(
+          ([$, $1]) =>
+            typeof $ === face && typeof $1 === num && $1 <= 1 && $1 >= 0
+        )
+      );
+    }
+
+    return typeof conf !== "undefined" && typeof conf === typeof init[key];
+  };
+
   return Object.keys(init).reduce((prev, cur) => {
-    const conf = config.get(cur);
+    const conf = config.get<NyanModeOptions[keyof NyanModeOptions]>(cur);
 
     return {
       ...prev,
-      [cur]:
-        typeof conf === typeof init[cur as keyof NyanModeOptions]
-          ? conf
-          : init[cur as keyof NyanModeOptions],
+      [cur]: checkType(conf, cur as keyof NyanModeOptions)
+        ? conf
+        : init[cur as keyof NyanModeOptions],
     };
   }, {} as NyanModeOptions);
 };
