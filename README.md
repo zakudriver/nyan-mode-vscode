@@ -27,7 +27,8 @@ This extension contributes the following settings:
 * `nyanMode.nyanHeader`: string of nyan-mode's header.
 * `nyanMode.nyanFooter`: string of nyan-mode's footer.
 * `nyanMode.nyanAction`: nyan-mode's move mode. The "line" mode is based on the line where the cursor resides, and the "range" is based on the view range.
-* `nyanMode.nyanFaceCurve`: the curve values of nyan's expression ( ^ｰ^). Like these [["(*^ｰﾟ)", 0.25], ["( ^ｰ^)", 0.5], ["(^ｰ^ )", 0.75], ["(ﾟｰ^*)", 1]]. When move to <= 25%, display "(*^ｰﾟ)", and move to <= 50%, "( ^ｰ^)", etc. The default display is font icon, so it's not recommended to modify.
+* `nyanMode.nyanFaceCurve`: the curve values of nyan's expression ( ^ｰ^). 
+Like these [["(*^ｰﾟ)", 0.25], ["( ^ｰ^)", 0.5], ["(^ｰ^ )", 0.75], ["(ﾟｰ^*)", 1]]. When move to <= 25%, display "(*^ｰﾟ)", and move to <= 50%, "( ^ｰ^)", etc. The default display is font icon, so it's not recommended to modify.
 
 
 Default value:
