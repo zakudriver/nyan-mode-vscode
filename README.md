@@ -1,6 +1,8 @@
 # [nyan-mode](https://github.com/zakudriver/nyan-mode-vscode)
 
-https://vsmarketplacebadge.apphb.com/version-short/zakudriver.nyan-mode.svg
+<a href="https://github.com/zakudriver/nyan-mode-vscode">
+  <img alt="version" src="https://vsmarketplacebadge.apphb.com/version-short/zakudriver.nyan-mode.svg" />
+</a>
 
 >For some friends who like nyan but don't use emacs.
 
