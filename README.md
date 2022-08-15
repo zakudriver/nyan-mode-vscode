@@ -1,5 +1,7 @@
 # [nyan-mode](https://github.com/zakudriver/nyan-mode-vscode)
 
+https://vsmarketplacebadge.apphb.com/version-short/zakudriver.nyan-mode.svg
+
 >For some friends who like nyan but don't use emacs.
 
 Emacs [nyan-mode](https://github.com/TeMPOraL/nyan-mode) for vscode.
