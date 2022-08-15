@@ -7,15 +7,10 @@ export const defConf: NyanModeOptions = {
   nyanColor: "#fff",
   nyanLength: 20,
   nyanDisplayPercent: false,
-  nyanHeader: " -",
-  nyanFooter: "| ",
+  nyanHeader: "$(nyan-space)",
+  nyanFooter: "$(nyan-rainbow)",
   nyanAction: "line",
-  nyanFaceCurve: [
-    ["(*^ｰﾟ)", 0.25],
-    ["( ^ｰ^)", 0.5],
-    ["(^ｰ^ )", 0.75],
-    ["(ﾟｰ^*)", 1],
-  ],
+  nyanFaceCurve: [["$(nyan-cat)", 1]],
 };
 
 export const confPrefix = "nyanMode";

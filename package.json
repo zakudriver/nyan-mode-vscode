@@ -16,7 +16,99 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
-  "contributes": {},
+  "contributes": {
+    "icons": {
+      "nyan-cat": {
+        "description": "nyan cat",
+        "default": {
+          "fontPath": "./nyan-cat.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-rainbow": {
+        "description": "nyan tail",
+        "default": {
+          "fontPath": "./nyan-rainbow.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-space": {
+        "description": "nyan space",
+        "default": {
+          "fontPath": "./nyan-space.woff",
+          "fontCharacter": ""
+        }
+      }
+    },
+    "configuration": {
+      "title": "nyan-mode",
+      "properties": {
+        "nyanMode.nyanDisable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable or disable nyan-mode."
+        },
+        "nyanMode.nyanAlign": {
+          "type": "string",
+          "default": "left",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "description": "Nyan-mode show at statusbar of 'left' or 'right'."
+        },
+        "nyanMode.nyanPriority": {
+          "type": "number",
+          "default": 0,
+          "description": "Higher values mean nyan-mode should be shown more to the left."
+        },
+        "nyanMode.nyanColor": {
+          "type": "string",
+          "default": "#fff",
+          "description": "Nyan-mode's color."
+        },
+        "nyanMode.nyanLength": {
+          "type": "number",
+          "default": 20,
+          "description": "Nyan-mode's lenght."
+        },
+        "nyanMode.nyanDisplayPercent": {
+          "type": "boolean",
+          "default": false,
+          "description": "If it's true, show position percent at nyan-mode of right."
+        },
+        "nyanMode.nyanHeader": {
+          "type": "string",
+          "default": "$(nyan-space)",
+          "description": "String of nyan-mode's header."
+        },
+        "nyanMode.nyanFooter": {
+          "type": "string",
+          "default": "$(nyan-rainbow)",
+          "description": "string of nyan-mode's footer."
+        },
+        "nyanMode.nyanAction": {
+          "type": "string",
+          "default": "line",
+          "enum": [
+            "line",
+            "range"
+          ],
+          "description": "nyan-mode's move mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
+        },
+        "nyanMode.nyanFaceCurve": {
+          "type": "Array",
+          "default": [
+            [
+              "$(nyan-cat)",
+              1
+            ]
+          ],
+          "description": "The curve values of nyan's expression ( ^ｰ^)."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
     "compile": "webpack",

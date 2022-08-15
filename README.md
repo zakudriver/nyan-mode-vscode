@@ -23,11 +23,11 @@ This extension contributes the following settings:
 * `nyanMode.nyanPriority`: higher values mean nyan-mode should be shown more to the left.
 * `nyanMode.nyanColor`: nyan-mode's color.
 * `nyanMode.nyanLength`: nyan-mode's length.
-* `nyanMode.nyanDisplayPercent`: if it's true, show position percent nyan-mode of right.
+* `nyanMode.nyanDisplayPercent`: if it's true, show position percent at nyan-mode of right.
 * `nyanMode.nyanHeader`: string of nyan-mode's header.
 * `nyanMode.nyanFooter`: string of nyan-mode's footer.
 * `nyanMode.nyanAction`: nyan-mode's move mode. The "line" mode is based on the line where the cursor resides, and the "range" is based on the view range.
-* `nyanMode.nyanFaceCurve`: the curve values of nyan's expression ( ^ｰ^).
+* `nyanMode.nyanFaceCurve`: the curve values of nyan's expression ( ^ｰ^). Like these [["(*^ｰﾟ)", 0.25], ["( ^ｰ^)", 0.5], ["(^ｰ^ )", 0.75], ["(ﾟｰ^*)", 1]]. When move to <= 25%, display "(*^ｰﾟ)", and move to <= 50%, "( ^ｰ^)", etc. The default display is font icon, so it's not recommended to modify.
 
 
 Default value:
@@ -42,7 +42,7 @@ export interface NyanModeOptions {
   nyanHeader?: string;                    // default: " -"
   nyanFooter?: string;                    // default: "| "
   nyanAction?: "line" | "range";          // default: "line"
-  nyanFaceCurve?: Array<[string, number]> // default: [["(*^ｰﾟ)", 0.25], ["( ^ｰ^)", 0.5], ["(^ｰ^ )", 0.75], ["(ﾟｰ^*)", 1]]
+  nyanFaceCurve?: Array<[string, number]> // default: [["$(nyan-cat)", 1]]
 }
 ```
 
@@ -54,18 +54,22 @@ Now nothings.
 
 ## Release Notes
 
-### 1.0.0
+### 1.2.0
 
-Initial release ...
+Now nyan is replaced by font icon! And add the settings menu. 
+
+### 1.1.2
+
+After a lot of thought, i think should be allowed to modify nyan's face and change curve.
 
 ### 1.1.1
 
 When modify settings.json, nyan-mode it will change accordingly.
 And fix default configs bugs.
 
-### 1.1.2
+### 1.0.0
 
-After a lot of thought, i think should be allowed to modify nyan's face and change curve.
+Initial release ...
 
 ---
 
