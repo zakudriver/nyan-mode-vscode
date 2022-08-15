@@ -23,7 +23,8 @@ This extension contributes the following settings:
 * `nyanMode.nyanPriority`: higher values mean nyan-mode should be shown more to the left.
 * `nyanMode.nyanColor`: nyan-mode's color.
 * `nyanMode.nyanLength`: nyan-mode's length.
-* `nyanMode.nyanDisplayPercent`: if it's true, show position percent at nyan-mode of right.
+* `nyanMode.nyanDisplayPercent`: if it's true, display position percent to the right of nyan.
+* `nyanMode.nyanDisplayBorder`: if it's true, display a border on either side of nyan. Like this [xxx].
 * `nyanMode.nyanHeader`: string of nyan-mode's header.
 * `nyanMode.nyanFooter`: string of nyan-mode's footer.
 * `nyanMode.nyanAction`: nyan-mode's move mode. The "line" mode is based on the line where the cursor resides, and the "range" is based on the view range.

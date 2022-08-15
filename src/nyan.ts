@@ -38,6 +38,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     nyanColor,
     nyanLength,
     nyanDisplayPercent,
+    nyanDisplayBorder,
     nyanHeader,
     nyanFooter,
     nyanAction,
@@ -70,7 +71,11 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
         nyanHeader,
         nyanFooter,
         nyanFaceCurve,
-      })(($, $1) => (nyanDisplayPercent ? `${$}  ${$1}` : $));
+      })(($, $1) => {
+        const nyanStr = nyanDisplayBorder ? `[${$}]` : $;
+
+        return nyanDisplayPercent ? `${nyanStr}  ${$1}` : nyanStr;
+      });
 
       nyanBar.color = nyanColor;
       nyanBar.tooltip = "nyan-mode";
@@ -143,6 +148,7 @@ const drawNyan = (
     | "nyanColor"
     | "nyanAction"
     | "nyanDisplayPercent"
+    | "nyanDisplayBorder"
   >
 ) => {
   const tailLen = Math.round(nyanLength * rate);
@@ -160,9 +166,9 @@ const drawNyan = (
 
   const face = nyanFace(rate, nyanFaceCurve);
 
-  return (segmentFn: (nyanStr: string, percentStr: string) => string) => {
+  return (fn: (nyanStr: string, percentStr: string) => string) => {
     const percent = makePercent(rate);
 
-    return segmentFn(`[${tail}${face}${ends}]`, percent);
+    return fn(`${tail}${face}${ends}`, percent);
   };
 };

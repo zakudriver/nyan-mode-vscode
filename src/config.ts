@@ -7,6 +7,7 @@ export const defConf: NyanModeOptions = {
   nyanColor: "#fff",
   nyanLength: 20,
   nyanDisplayPercent: false,
+  nyanDisplayBorder: false,
   nyanHeader: "$(nyan-space)",
   nyanFooter: "$(nyan-rainbow)",
   nyanAction: "line",

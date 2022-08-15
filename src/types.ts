@@ -5,6 +5,7 @@ export interface NyanModeOptions {
   nyanColor: string;
   nyanLength: number;
   nyanDisplayPercent: boolean;
+  nyanDisplayBorder: boolean;
   nyanHeader: string;
   nyanFooter: string;
   nyanAction: "line" | "range";

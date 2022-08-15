@@ -75,7 +75,12 @@
         "nyanMode.nyanDisplayPercent": {
           "type": "boolean",
           "default": false,
-          "description": "If it's true, show position percent at nyan-mode of right."
+          "description": "If it's true, display position percent to the right of nyan."
+        },
+        "nyanMode.nyanDisplayBorder": {
+          "type": "boolean",
+          "default": false,
+          "description": "If it's true, display a border on either side of nyan. Like this [xxx]."
         },
         "nyanMode.nyanHeader": {
           "type": "string",
