@@ -58,7 +58,7 @@ Now nothings.
 
 ### 1.2.0
 
-Now nyan is replaced by font icon! And add the settings menu. 
+Now nyan is replaced by font icon! And add menu at the settings and whether display border.
 
 ### 1.1.2
 
