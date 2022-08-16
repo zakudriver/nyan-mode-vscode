@@ -6,8 +6,6 @@ export interface NyanModeOptions {
   nyanLength: number;
   nyanDisplayPercent: boolean;
   nyanDisplayBorder: boolean;
-  nyanHeader: string;
-  nyanFooter: string;
-  nyanAction: "line" | "range";
-  nyanFaceCurve: Array<[string, number]>;
+  nyanAction: "range" | "line";
+  nyanAnimation: "always" | "none" | "moving";
 }

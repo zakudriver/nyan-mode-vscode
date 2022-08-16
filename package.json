@@ -2,7 +2,7 @@
   "name": "nyan-mode",
   "displayName": "nyan-mode",
   "description": "emacs nyan-mode on vscode",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "zakudriver",
   "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
@@ -18,13 +18,6 @@
   "main": "./dist/extension.js",
   "contributes": {
     "icons": {
-      "nyan-cat": {
-        "description": "nyan cat",
-        "default": {
-          "fontPath": "./nyan-cat.woff",
-          "fontCharacter": ""
-        }
-      },
       "nyan-rainbow": {
         "description": "nyan tail",
         "default": {
@@ -37,6 +30,90 @@
         "default": {
           "fontPath": "./nyan-space.woff",
           "fontCharacter": ""
+        }
+      },
+      "nyan-0": {
+        "description": "1frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-1": {
+        "description": "2frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-2": {
+        "description": "3frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-3": {
+        "description": "4frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-4": {
+        "description": "5frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-5": {
+        "description": "6frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-6": {
+        "description": "7frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-7": {
+        "description": "8frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-8": {
+        "description": "9frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-9": {
+        "description": "10frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-10": {
+        "description": "11frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
+        }
+      },
+      "nyan-11": {
+        "description": "12frame",
+        "default": {
+          "fontPath": "./icomoon.woff",
+          "fontCharacter": ""
         }
       }
     },
@@ -82,34 +159,24 @@
           "default": false,
           "description": "If it's true, display a border on either side of nyan. Like this [xxx]."
         },
-        "nyanMode.nyanHeader": {
-          "type": "string",
-          "default": "$(nyan-space)",
-          "description": "String of nyan-mode's header."
-        },
-        "nyanMode.nyanFooter": {
-          "type": "string",
-          "default": "$(nyan-rainbow)",
-          "description": "string of nyan-mode's footer."
-        },
         "nyanMode.nyanAction": {
           "type": "string",
-          "default": "line",
+          "default": "range",
           "enum": [
-            "line",
-            "range"
+            "range",
+            "line"
           ],
           "description": "nyan-mode's move mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
         },
-        "nyanMode.nyanFaceCurve": {
-          "type": "Array",
-          "default": [
-            [
-              "$(nyan-cat)",
-              1
-            ]
+        "nyanMode.nyanAnimation": {
+          "type": "string",
+          "default": "moving",
+          "enum": [
+            "none",
+            "moving",
+            "always"
           ],
-          "description": "The curve values of nyan's expression ( ^ｰ^)."
+          "description": "nyan when to animates. If it's 'moving', when scroll or move the cursor nyan will animate."
         }
       }
     }
@@ -126,19 +193,22 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.67.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.67.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.1.5",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
-    "typescript": "^4.7.4",
     "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
     "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
-    "@vscode/test-electron": "^2.1.5"
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "rxjs": "^7.5.6"
   }
 }

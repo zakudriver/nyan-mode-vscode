@@ -25,12 +25,7 @@ This extension contributes the following settings:
 * `nyanMode.nyanLength`: nyan-mode's length.
 * `nyanMode.nyanDisplayPercent`: if it's true, display position percent to the right of nyan.
 * `nyanMode.nyanDisplayBorder`: if it's true, display a border on either side of nyan. Like this [xxx].
-* `nyanMode.nyanHeader`: string of nyan-mode's header.
-* `nyanMode.nyanFooter`: string of nyan-mode's footer.
 * `nyanMode.nyanAction`: nyan-mode's move mode. The "line" mode is based on the line where the cursor resides, and the "range" is based on the view range.
-* `nyanMode.nyanFaceCurve`: the curve values of nyan's expression ( ^ｰ^). 
-Like these [["(*^ｰﾟ)", 0.25], ["( ^ｰ^)", 0.5], ["(^ｰ^ )", 0.75], ["(ﾟｰ^*)", 1]]. When move to <= 25%, display "(*^ｰﾟ)", and move to <= 50%, "( ^ｰ^)", etc. The default display is font icon, so it's not recommended to modify.
-
 
 Default value:
 ```typescript
@@ -41,10 +36,7 @@ export interface NyanModeOptions {
   nyanColor?: string;                     // default: "#fff"
   nyanLength?: number;                    // default: 20
   nyanDisplayPercent?: boolean;           // default: false
-  nyanHeader?: string;                    // default: " -"
-  nyanFooter?: string;                    // default: "| "
   nyanAction?: "line" | "range";          // default: "line"
-  nyanFaceCurve?: Array<[string, number]> // default: [["$(nyan-cat)", 1]]
 }
 ```
 
@@ -55,6 +47,10 @@ export interface NyanModeOptions {
 Now nothings.
 
 ## Release Notes
+
+### 1.3.0
+
+Now nyan can animate!! And modify some config.
 
 ### 1.2.0
 

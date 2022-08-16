@@ -4,14 +4,32 @@ import {
   TextEditor,
   workspace,
   Disposable,
+  Event,
 } from "vscode";
-import { timesReduce, makePercent, debounce, getConfig } from "./utils";
+import {
+  debounceTime,
+  interval,
+  Observable,
+  take,
+  map,
+  exhaustMap,
+  Subject,
+  combineLatest,
+} from "rxjs";
+import { makePercent, getConfig } from "./utils";
 import { NyanModeOptions } from "./types";
-import { defConf, confPrefix } from "./config";
+import {
+  defConf,
+  confPrefix,
+  nyanFrames,
+  frameMs,
+  nyanRainbow,
+  nyanSpace,
+} from "./config";
 
 const configObservable = (
   init: NyanModeOptions,
-  fn: (config: NyanModeOptions) => Disposable,
+  fn: (config: NyanModeOptions) => Disposable | undefined,
   prefix = confPrefix
 ): Disposable => {
   const next = () => {
@@ -22,12 +40,12 @@ const configObservable = (
   let nextDis = next();
   const dis = workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration(prefix)) {
-      nextDis.dispose();
+      nextDis?.dispose();
       nextDis = next();
     }
   });
 
-  return Disposable.from(dis, new Disposable(() => nextDis.dispose()));
+  return Disposable.from(dis, new Disposable(() => nextDis?.dispose()));
 };
 
 export const createNyan = (init: NyanModeOptions = defConf) => {
@@ -39,11 +57,9 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     nyanLength,
     nyanDisplayPercent,
     nyanDisplayBorder,
-    nyanHeader,
-    nyanFooter,
     nyanAction,
-    nyanFaceCurve,
-  }: NyanModeOptions) => {
+    nyanAnimation,
+  }: NyanModeOptions): Disposable | undefined => {
     const nyanBar = window.createStatusBarItem(
       nyanAlign === "right"
         ? StatusBarAlignment.Right
@@ -53,12 +69,13 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
 
     if (nyanDisable) {
       nyanBar.hide();
-      return Disposable.from();
+      return;
     }
 
+    const container = new Array(nyanLength).fill("");
     const makeRate = nyanAction === "range" ? rangeAction : lineAction;
 
-    const updateNyan = (): void => {
+    const nyanRun = (face: string, index: number): void => {
       const editor = window.activeTextEditor;
 
       if (!editor) {
@@ -66,16 +83,12 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
         return;
       }
 
-      nyanBar.text = drawNyan(makeRate(editor), {
-        nyanLength,
-        nyanHeader,
-        nyanFooter,
-        nyanFaceCurve,
-      })(($, $1) => {
-        const nyanStr = nyanDisplayBorder ? `[${$}]` : $;
+      const str = nyanFactory(container, face, index);
+      const nyanStr = nyanDisplayBorder ? `[${str}]` : str;
 
-        return nyanDisplayPercent ? `${nyanStr}  ${$1}` : nyanStr;
-      });
+      nyanBar.text = nyanDisplayPercent
+        ? `${nyanStr}  ${makePercent(makeRate(editor))}`
+        : nyanStr;
 
       nyanBar.color = nyanColor;
       nyanBar.tooltip = "nyan-mode";
@@ -83,30 +96,37 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
       nyanBar.show();
     };
 
-    const handleUpdateNyan = debounce(() => updateNyan());
-    const handleHideNyan = debounce(() => nyanBar.hide());
-
     const onDidChange =
       nyanAction === "range"
         ? window.onDidChangeTextEditorVisibleRanges
         : window.onDidChangeTextEditorSelection;
 
-    handleUpdateNyan();
-    const dis: Disposable[] = [nyanBar];
+    const changeSubject = changeObservableFactory(onDidChange);
 
-    dis.push(onDidChange(handleUpdateNyan));
+    const changeSubs = operatorFactory(
+      changeSubject.pipe(
+        debounceTime(50),
+        map(() => nyanIndex(makeRate, nyanLength))
+      ),
+      nyanAnimation
+    ).subscribe(([face, index]) => nyanRun(face, index));
 
-    dis.push(
-      window.onDidChangeVisibleTextEditors((e) => {
-        if (e.length) {
-          handleUpdateNyan();
-        } else {
-          handleHideNyan();
-        }
-      })
-    );
+    const changeVisibleSub = changeVisibleFactory().subscribe((res) => {
+      if (res) {
+        changeSubject.next();
+      } else {
+        nyanBar.hide();
+        changeSubs.unsubscribe();
+      }
+    });
 
-    return Disposable.from(...dis);
+    window.activeTextEditor && changeSubject.next();
+
+    return new Disposable(() => {
+      nyanBar.dispose();
+      changeSubject.complete();
+      changeVisibleSub.unsubscribe();
+    });
   };
 
   return configObservable(init, nyan);
@@ -127,48 +147,84 @@ const rangeAction = ({ visibleRanges, document }: TextEditor): number => {
   return 1;
 };
 
-const nyanFace = (rate: number, lines: Array<[string, number]>): string => {
-  const [face] = lines.find(([, v]) => rate <= v) || lines[lines.length - 1];
+const changeObservableFactory = (onDidChange: Event<any>): Subject<void> => {
+  const subject = new Subject<void>();
 
-  return face;
+  const dis = onDidChange(() => subject.next());
+
+  subject.subscribe({
+    complete() {
+      dis.dispose();
+    },
+  });
+
+  return subject;
 };
 
-const drawNyan = (
-  rate: number,
-  {
-    nyanLength,
-    nyanHeader,
-    nyanFooter,
-    nyanFaceCurve,
-  }: Omit<
-    NyanModeOptions,
-    | "nyanDisable"
-    | "nyanAlign"
-    | "nyanPriority"
-    | "nyanColor"
-    | "nyanAction"
-    | "nyanDisplayPercent"
-    | "nyanDisplayBorder"
-  >
-) => {
-  const tailLen = Math.round(nyanLength * rate);
+const operatorFactory = (
+  oba: Observable<number>,
+  nyanAnimation: NyanModeOptions["nyanAnimation"]
+): Observable<readonly [string, number]> => {
+  if (nyanAnimation === "moving") {
+    return oba.pipe(
+      exhaustMap((index) =>
+        interval(frameMs).pipe(
+          map((i) => [nyanFrames[i], index] as const),
+          take(nyanFrames.length)
+        )
+      )
+    );
+  }
 
-  const tail = timesReduce(
-    tailLen,
-    (arg, i) => (i ? (arg += nyanFooter) : ""),
-    ""
-  );
-  const ends = timesReduce(
-    nyanLength - tailLen,
-    (arg) => (arg += nyanHeader),
-    ""
-  );
+  let i = 0;
+  if (nyanAnimation === "always") {
+    return combineLatest([
+      interval(frameMs).pipe(
+        map(() => {
+          const frame = nyanFrames[i++];
+          if (i >= nyanFrames.length) {
+            i = 0;
+          }
+          return frame;
+        })
+      ),
+      oba,
+    ]);
+  }
 
-  const face = nyanFace(rate, nyanFaceCurve);
-
-  return (fn: (nyanStr: string, percentStr: string) => string) => {
-    const percent = makePercent(rate);
-
-    return fn(`${tail}${face}${ends}`, percent);
-  };
+  return oba.pipe(map((index) => [nyanFrames[0], index]));
 };
+
+const nyanIndex = (
+  rateFn: (editor: TextEditor) => number,
+  nyanLen: number
+): number => {
+  const editor = window.activeTextEditor;
+  if (editor) {
+    const index = Math.round(rateFn(editor) * nyanLen);
+
+    return nyanLen > index ? index : index - 1;
+  }
+  return 0;
+};
+
+const changeVisibleFactory = (): Observable<boolean> =>
+  new Observable<boolean>((ob) => {
+    const dis = window.onDidChangeVisibleTextEditors((e) =>
+      ob.next(!!e.length)
+    );
+
+    return () => dis.dispose();
+  }).pipe(debounceTime(50));
+
+const nyanFactory = (container: string[], face: string, index: number) =>
+  container
+    .map((_, i) => {
+      if (i < index) {
+        return nyanRainbow;
+      } else if (i === index) {
+        return face;
+      }
+      return nyanSpace;
+    })
+    .join("");
