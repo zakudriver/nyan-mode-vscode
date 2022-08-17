@@ -67,23 +67,6 @@ to reduce debounceTime; optimize onDidChangeTextEditorSelection call; hide nyan 
 
 Now nyan can animate!! And modify some config.
 
-### 1.2.0
-
-Now nyan is replaced by font icon! And add menu at the settings and whether display border.
-
-### 1.1.2
-
-After a lot of thought, i think should be allowed to modify nyan's face and change curve.
-
-### 1.1.1
-
-When modify settings.json, nyan-mode it will change accordingly.
-And fix default configs bugs.
-
-### 1.0.0
-
-Initial release ...
-
 ---
 
 ## Thanks list
