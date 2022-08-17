@@ -132,8 +132,8 @@ export const createNyan = () => {
     };
 
     const changeVisibleSub = changeVisibleFactory().subscribe((visible) => {
-      if (visible && changeSubs.closed) {
-        changeSubs = subscribeChange();
+      if (visible) {
+        changeSubs.closed && (changeSubs = subscribeChange());
         changeSubject.next();
       }
       if (!visible) {
