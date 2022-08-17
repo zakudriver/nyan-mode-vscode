@@ -55,6 +55,10 @@ Now nothings.
 
 ## Release Notes
 
+### 1.3.1
+
+to reduce debounceTime; optimize onDidChangeTextEditorSelection call; hide nyan and to unsubscribe.
+
 ### 1.3.0
 
 Now nyan can animate!! And modify some config.
