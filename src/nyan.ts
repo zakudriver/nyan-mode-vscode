@@ -4,7 +4,6 @@ import {
   TextEditor,
   workspace,
   Disposable,
-  Event,
 } from "vscode";
 import {
   debounceTime,
@@ -20,19 +19,20 @@ import {
 import { makePercent, getConfig } from "./utils";
 import { NyanModeOptions } from "./types";
 import {
-  defConf,
-  confPrefix,
+  nyanDefConf,
+  nyanConfPrefix,
   nyanFrames,
-  frameMs,
+  nyanFrameMs,
   nyanRainbow,
   nyanSpace,
   nyanTooltip,
+  nyanDebounceMs,
 } from "./config";
 
 const configObservable = (
   init: NyanModeOptions,
   fn: (config: NyanModeOptions) => Disposable | undefined,
-  prefix = confPrefix
+  prefix = nyanConfPrefix
 ): Disposable => {
   const next = () => {
     const conf = getConfig(init, prefix);
@@ -50,7 +50,7 @@ const configObservable = (
   return Disposable.from(dis, new Disposable(() => nextDis?.dispose()));
 };
 
-export const createNyan = (init: NyanModeOptions = defConf) => {
+export const createNyan = () => {
   const nyan = ({
     nyanDisable,
     nyanAlign,
@@ -77,7 +77,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     }
 
     const container = new Array(nyanLength).fill("");
-    const makeRate = nyanAction === "scrolling" ? rangeAction : lineAction;
+    const makeRate = nyanAction === "scrolling" ? scrollingRate : movingRate;
 
     const nyanRun = (face: string, index: number): void => {
       const editor = window.activeTextEditor;
@@ -97,29 +97,49 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
       nyanBar.show();
     };
 
-    const onDidChange =
-      nyanAction === "scrolling"
-        ? window.onDidChangeTextEditorVisibleRanges
-        : window.onDidChangeTextEditorSelection;
+    const changeSubject = changeObservableFactory(
+      onDidChangeFactory(nyanAction)
+    );
 
-    const changeSubject = changeObservableFactory(onDidChange);
-
-    const changeSubs = operatorFactory(
+    const changeOba = operatorFactory(
       changeSubject.pipe(
-        debounceTime(50),
-        filter(() => !!window.activeTextEditor),
+        debounceTime(nyanDebounceMs),
         map(() => nyanIndex(makeRate, nyanLength))
       ),
       nyanAnimation
-    ).subscribe(([face, index]) => {
-      nyanRun(face, index);
-    });
+    );
+
+    const subscribeChange = () =>
+      changeOba
+        .pipe(
+          filter(() => {
+            const isActiveEditor = !!window.activeTextEditor;
+            if (!isActiveEditor) {
+              hideNyan();
+            }
+
+            return isActiveEditor;
+          })
+        )
+        .subscribe(([face, index]) => nyanRun(face, index));
+
+    let changeSubs = subscribeChange();
+    window.activeTextEditor && changeSubject.next();
+
+    const hideNyan = () => {
+      nyanBar.hide();
+      changeSubs.unsubscribe();
+    };
 
     const changeVisibleSub = changeVisibleFactory().subscribe((visible) => {
-      visible ? changeSubject.next() : nyanBar.hide();
+      if (visible && changeSubs.closed) {
+        changeSubs = subscribeChange();
+        changeSubject.next();
+      }
+      if (!visible) {
+        hideNyan();
+      }
     });
-
-    window.activeTextEditor && changeSubject.next();
 
     return new Disposable(() => {
       nyanBar.dispose();
@@ -129,13 +149,13 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     });
   };
 
-  return configObservable(init, nyan);
+  return configObservable(nyanDefConf, nyan);
 };
 
-const lineAction = ({ document, selection }: TextEditor): number =>
+const movingRate = ({ document, selection }: TextEditor): number =>
   document.lineCount - 1 ? selection.active.line / (document.lineCount - 1) : 0;
 
-const rangeAction = ({ visibleRanges, document }: TextEditor): number => {
+const scrollingRate = ({ visibleRanges, document }: TextEditor): number => {
   if (visibleRanges.length) {
     const diff = visibleRanges[0].end.line - visibleRanges[0].start.line;
     const startLine = visibleRanges[0].start.line;
@@ -147,7 +167,27 @@ const rangeAction = ({ visibleRanges, document }: TextEditor): number => {
   return 1;
 };
 
-const changeObservableFactory = (onDidChange: Event<any>): Subject<void> => {
+const onDidChangeFactory = (
+  action: NyanModeOptions["nyanAction"]
+): ((fn: () => void) => Disposable) =>
+  action === "scrolling"
+    ? window.onDidChangeTextEditorVisibleRanges
+    : (fn: () => void) => {
+        let prev = 0;
+
+        return window.onDidChangeTextEditorSelection((e) => {
+          const cur = e.textEditor.selection.end.line;
+
+          if (prev !== cur) {
+            fn();
+          }
+          prev = cur;
+        });
+      };
+
+const changeObservableFactory = (
+  onDidChange: (fn: () => void) => Disposable
+): Subject<void> => {
   const subject = new Subject<void>();
 
   const dis = onDidChange(() => subject.next());
@@ -168,7 +208,7 @@ const operatorFactory = (
   if (nyanAnimation === "quiet") {
     return oba.pipe(
       exhaustMap((index) =>
-        interval(frameMs).pipe(
+        interval(nyanFrameMs).pipe(
           map((i) => [nyanFrames[i], index] as const),
           take(nyanFrames.length)
         )
@@ -179,7 +219,7 @@ const operatorFactory = (
   let i = 0;
   if (nyanAnimation === "active") {
     return combineLatest([
-      interval(frameMs).pipe(
+      interval(nyanFrameMs).pipe(
         map(() => {
           const frame = nyanFrames[i++];
           if (i >= nyanFrames.length) {
@@ -215,7 +255,7 @@ const changeVisibleFactory = (): Observable<boolean> =>
     );
 
     return () => dis.dispose();
-  }).pipe(debounceTime(50));
+  }).pipe(debounceTime(nyanDebounceMs));
 
 const nyanFactory = (container: string[], face: string, index: number) =>
   container

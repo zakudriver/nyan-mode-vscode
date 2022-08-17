@@ -1,6 +1,6 @@
 import { NyanModeOptions } from "./types";
 
-export const defConf: NyanModeOptions = {
+export const nyanDefConf: NyanModeOptions = {
   nyanDisable: false,
   nyanAlign: "left",
   nyanPriority: 0,
@@ -12,9 +12,9 @@ export const defConf: NyanModeOptions = {
   nyanAnimation: "quiet",
 };
 
-export const frameMs = (1 / 20) * 1000;
+export const nyanConfPrefix = "nyanMode";
 
-export const confPrefix = "nyanMode";
+export const nyanFrameMs = (1 / 20) * 1000;
 
 export const nyanSpace = "$(nyan-space)";
 
@@ -36,3 +36,5 @@ export const nyanFrames = [
 ];
 
 export const nyanTooltip = "nyan-mode";
+
+export const nyanDebounceMs = 30;
