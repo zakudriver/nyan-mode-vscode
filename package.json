@@ -19,100 +19,100 @@
   "contributes": {
     "icons": {
       "nyan-rainbow": {
-        "description": "nyan tail",
+        "description": "nyan rainbow",
         "default": {
-          "fontPath": "./nyan-rainbow.woff",
-          "fontCharacter": ""
+          "fontPath": "./nyan.woff",
+          "fontCharacter": ""
         }
       },
       "nyan-space": {
         "description": "nyan space",
         "default": {
-          "fontPath": "./nyan-space.woff",
-          "fontCharacter": ""
+          "fontPath": "./nyan.woff",
+          "fontCharacter": ""
         }
       },
       "nyan-0": {
         "description": "1frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-1": {
         "description": "2frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-2": {
         "description": "3frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-3": {
         "description": "4frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-4": {
         "description": "5frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-5": {
         "description": "6frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-6": {
         "description": "7frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-7": {
         "description": "8frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-8": {
         "description": "9frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-9": {
         "description": "10frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-10": {
         "description": "11frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       },
       "nyan-11": {
         "description": "12frame",
         "default": {
-          "fontPath": "./icomoon.woff",
+          "fontPath": "./nyan.woff",
           "fontCharacter": ""
         }
       }
@@ -137,7 +137,7 @@
         "nyanMode.nyanPriority": {
           "type": "number",
           "default": 0,
-          "description": "Higher values mean nyan-mode should be shown more to the left."
+          "description": "Position priority, higher values mean nyan-mode should be shown more to the left."
         },
         "nyanMode.nyanColor": {
           "type": "string",
@@ -161,22 +161,22 @@
         },
         "nyanMode.nyanAction": {
           "type": "string",
-          "default": "range",
+          "default": "scrolling",
           "enum": [
-            "range",
-            "line"
+            "scrolling",
+            "moving"
           ],
-          "description": "nyan-mode's move mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
+          "description": "Nyan-mode's action mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
         },
         "nyanMode.nyanAnimation": {
           "type": "string",
-          "default": "moving",
+          "default": "quiet",
           "enum": [
             "none",
-            "moving",
-            "always"
+            "quiet",
+            "active"
           ],
-          "description": "nyan when to animates. If it's 'moving', when scroll or move the cursor nyan will animate."
+          "description": "Nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still."
         }
       }
     }

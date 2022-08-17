@@ -8,8 +8,8 @@ export const defConf: NyanModeOptions = {
   nyanLength: 20,
   nyanDisplayPercent: false,
   nyanDisplayBorder: false,
-  nyanAction: "line",
-  nyanAnimation: "moving",
+  nyanAction: "scrolling",
+  nyanAnimation: "quiet",
 };
 
 export const frameMs = (1 / 20) * 1000;
@@ -34,3 +34,5 @@ export const nyanFrames = [
   "$(nyan-10)",
   "$(nyan-11)",
 ];
+
+export const nyanTooltip = "nyan-mode";

@@ -14,29 +14,36 @@ Like emacs nyan-mode. It's an analog indicator of your position in the tab. The 
 
 Since vscode statusbar supports string only, so i only remake terminal edition.
 
+
+## Screenshot
+
+![image](screenshot.gif)
+
 ## Extension Settings
 
 This extension contributes the following settings:
 
 * `nyanMode.nyanDisable`: enable or disable nyan-mode.
 * `nyanMode.nyanAlign`: nyan-mode show at statusbar of 'left' or 'right'.
-* `nyanMode.nyanPriority`: higher values mean nyan-mode should be shown more to the left.
+* `nyanMode.nyanPriority`: position priority, higher values mean nyan-mode should be shown more to the left.
 * `nyanMode.nyanColor`: nyan-mode's color.
 * `nyanMode.nyanLength`: nyan-mode's length.
 * `nyanMode.nyanDisplayPercent`: if it's true, display position percent to the right of nyan.
 * `nyanMode.nyanDisplayBorder`: if it's true, display a border on either side of nyan. Like this [xxx].
-* `nyanMode.nyanAction`: nyan-mode's move mode. The "line" mode is based on the line where the cursor resides, and the "range" is based on the view range.
+* `nyanMode.nyanAction`: nyan-mode's action mode. The 'moving' mode which uses cursor activity to control the progress bar, and the ‘scrolling’ mode uses the scroll bar to control. 
+* `nyanMode.nyanAnimation`: nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still.
 
 Default value:
 ```typescript
 export interface NyanModeOptions {
-  nyanDisable?: boolean;                  // default: false
-  nyanAlign?: "left" | "right";           // default: "left"
-  nyanPriority?: number;                  // default: 0
-  nyanColor?: string;                     // default: "#fff"
-  nyanLength?: number;                    // default: 20
-  nyanDisplayPercent?: boolean;           // default: false
-  nyanAction?: "line" | "range";          // default: "line"
+  nyanDisable?: boolean;                        // default: false
+  nyanAlign?: "left" | "right";                 // default: "left"
+  nyanPriority?: number;                        // default: 0
+  nyanColor?: string;                           // default: "#fff"
+  nyanLength?: number;                          // default: 20
+  nyanDisplayPercent?: boolean;                 // default: false
+  nyanAction?: "scrolling" | "moving";          // default: "scrolling"
+  nyanAnimation?: "quiet" | "active" | "none";  // default: "quiet"
 }
 ```
 

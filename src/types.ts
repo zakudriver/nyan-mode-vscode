@@ -6,6 +6,6 @@ export interface NyanModeOptions {
   nyanLength: number;
   nyanDisplayPercent: boolean;
   nyanDisplayBorder: boolean;
-  nyanAction: "range" | "line";
-  nyanAnimation: "always" | "none" | "moving";
+  nyanAction: "scrolling" | "moving";
+  nyanAnimation: "quiet" | "active" | "none";
 }

@@ -15,6 +15,7 @@ import {
   exhaustMap,
   Subject,
   combineLatest,
+  filter,
 } from "rxjs";
 import { makePercent, getConfig } from "./utils";
 import { NyanModeOptions } from "./types";
@@ -25,6 +26,7 @@ import {
   frameMs,
   nyanRainbow,
   nyanSpace,
+  nyanTooltip,
 } from "./config";
 
 const configObservable = (
@@ -66,6 +68,8 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
         : StatusBarAlignment.Left,
       nyanPriority
     );
+    nyanBar.color = nyanColor;
+    nyanBar.tooltip = nyanTooltip;
 
     if (nyanDisable) {
       nyanBar.hide();
@@ -73,7 +77,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     }
 
     const container = new Array(nyanLength).fill("");
-    const makeRate = nyanAction === "range" ? rangeAction : lineAction;
+    const makeRate = nyanAction === "scrolling" ? rangeAction : lineAction;
 
     const nyanRun = (face: string, index: number): void => {
       const editor = window.activeTextEditor;
@@ -90,14 +94,11 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
         ? `${nyanStr}  ${makePercent(makeRate(editor))}`
         : nyanStr;
 
-      nyanBar.color = nyanColor;
-      nyanBar.tooltip = "nyan-mode";
-
       nyanBar.show();
     };
 
     const onDidChange =
-      nyanAction === "range"
+      nyanAction === "scrolling"
         ? window.onDidChangeTextEditorVisibleRanges
         : window.onDidChangeTextEditorSelection;
 
@@ -106,18 +107,16 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     const changeSubs = operatorFactory(
       changeSubject.pipe(
         debounceTime(50),
+        filter(() => !!window.activeTextEditor),
         map(() => nyanIndex(makeRate, nyanLength))
       ),
       nyanAnimation
-    ).subscribe(([face, index]) => nyanRun(face, index));
+    ).subscribe(([face, index]) => {
+      nyanRun(face, index);
+    });
 
-    const changeVisibleSub = changeVisibleFactory().subscribe((res) => {
-      if (res) {
-        changeSubject.next();
-      } else {
-        nyanBar.hide();
-        changeSubs.unsubscribe();
-      }
+    const changeVisibleSub = changeVisibleFactory().subscribe((visible) => {
+      visible ? changeSubject.next() : nyanBar.hide();
     });
 
     window.activeTextEditor && changeSubject.next();
@@ -125,6 +124,7 @@ export const createNyan = (init: NyanModeOptions = defConf) => {
     return new Disposable(() => {
       nyanBar.dispose();
       changeSubject.complete();
+      changeSubs.unsubscribe();
       changeVisibleSub.unsubscribe();
     });
   };
@@ -165,7 +165,7 @@ const operatorFactory = (
   oba: Observable<number>,
   nyanAnimation: NyanModeOptions["nyanAnimation"]
 ): Observable<readonly [string, number]> => {
-  if (nyanAnimation === "moving") {
+  if (nyanAnimation === "quiet") {
     return oba.pipe(
       exhaustMap((index) =>
         interval(frameMs).pipe(
@@ -177,7 +177,7 @@ const operatorFactory = (
   }
 
   let i = 0;
-  if (nyanAnimation === "always") {
+  if (nyanAnimation === "active") {
     return combineLatest([
       interval(frameMs).pipe(
         map(() => {
