@@ -26,14 +26,3 @@ export const getConfig = (
     };
   }, {} as NyanModeOptions);
 };
-
-export const debounce = (cb: () => void, time = 50) => {
-  let timeout: null | NodeJS.Timeout = null;
-
-  return () => {
-    if (timeout !== null) {
-      clearTimeout(timeout);
-    }
-    timeout = setTimeout(cb, time);
-  };
-};

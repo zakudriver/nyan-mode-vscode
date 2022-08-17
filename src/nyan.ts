@@ -14,7 +14,7 @@ import {
   exhaustMap,
   Subject,
   combineLatest,
-  filter,
+  takeWhile,
 } from "rxjs";
 import { makePercent, getConfig } from "./utils";
 import { NyanModeOptions } from "./types";
@@ -103,21 +103,18 @@ export const createNyan = () => {
       onDidChangeFactory(nyanAction)
     );
 
-    const changeOba = operatorFactory(changeSubject, nyanAnimation);
+    const changeOba = operatorFactory(changeSubject, nyanAnimation).pipe(
+      takeWhile(() => {
+        const isActive = !!window.activeTextEditor;
+        if (!isActive) {
+          nyanBar.hide();
+        }
 
-    const subscribeChange = () =>
-      changeOba
-        .pipe(
-          filter(() => {
-            const isActiveEditor = !!window.activeTextEditor;
-            if (!isActiveEditor) {
-              hideNyan();
-            }
+        return isActive;
+      })
+    );
 
-            return isActiveEditor;
-          })
-        )
-        .subscribe(nyanRun);
+    const subscribeChange = () => changeOba.subscribe(nyanRun);
 
     let changeSubs = subscribeChange();
     window.activeTextEditor && changeSubject.next();
