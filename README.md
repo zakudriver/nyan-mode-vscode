@@ -78,4 +78,8 @@ Initial release ...
 
 ---
 
+## Thanks list
+
+Thanks to [hikari6688](https://github.com/hikari6688) for the nyan icon font
+
 **Enjoy!**
