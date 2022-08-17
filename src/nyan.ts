@@ -79,13 +79,15 @@ export const createNyan = () => {
     const container = new Array(nyanLength).fill("");
     const makeRate = nyanAction === "scrolling" ? scrollingRate : movingRate;
 
-    const nyanRun = (face: string, index: number): void => {
+    const nyanRun = (face: string): void => {
       const editor = window.activeTextEditor;
 
       if (!editor) {
         nyanBar.hide();
         return;
       }
+
+      const index = nyanIndex(makeRate, nyanLength);
 
       const str = nyanFactory(container, face, index);
       const nyanStr = nyanDisplayBorder ? `[${str}]` : str;
@@ -101,13 +103,7 @@ export const createNyan = () => {
       onDidChangeFactory(nyanAction)
     );
 
-    const changeOba = operatorFactory(
-      changeSubject.pipe(
-        debounceTime(nyanDebounceMs),
-        map(() => nyanIndex(makeRate, nyanLength))
-      ),
-      nyanAnimation
-    );
+    const changeOba = operatorFactory(changeSubject, nyanAnimation);
 
     const subscribeChange = () =>
       changeOba
@@ -121,7 +117,7 @@ export const createNyan = () => {
             return isActiveEditor;
           })
         )
-        .subscribe(([face, index]) => nyanRun(face, index));
+        .subscribe(nyanRun);
 
     let changeSubs = subscribeChange();
     window.activeTextEditor && changeSubject.next();
@@ -202,14 +198,14 @@ const changeObservableFactory = (
 };
 
 const operatorFactory = (
-  oba: Observable<number>,
+  oba: Observable<void>,
   nyanAnimation: NyanModeOptions["nyanAnimation"]
-): Observable<readonly [string, number]> => {
+): Observable<string> => {
   if (nyanAnimation === "quiet") {
     return oba.pipe(
-      exhaustMap((index) =>
+      exhaustMap(() =>
         interval(nyanFrameMs).pipe(
-          map((i) => [nyanFrames[i], index] as const),
+          map((i) => nyanFrames[i]),
           take(nyanFrames.length)
         )
       )
@@ -229,10 +225,10 @@ const operatorFactory = (
         })
       ),
       oba,
-    ]);
+    ]).pipe(map(([face]) => face));
   }
 
-  return oba.pipe(map((index) => [nyanFrames[0], index]));
+  return oba.pipe(map(() => nyanFrames[0]));
 };
 
 const nyanIndex = (
@@ -243,7 +239,7 @@ const nyanIndex = (
   if (editor) {
     const index = Math.round(rateFn(editor) * nyanLen);
 
-    return nyanLen > index ? index : index - 1;
+    return nyanLen > index ? index : nyanLen - 1;
   }
   return 0;
 };
