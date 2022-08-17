@@ -16,13 +16,12 @@ import {
   combineLatest,
   takeWhile,
 } from "rxjs";
-import { makePercent, getConfig } from "./utils";
+import { makePercent, getConfig, makeFrameMs } from "./utils";
 import { NyanModeOptions } from "./types";
 import {
   nyanDefConf,
   nyanConfPrefix,
-  nyanFrames,
-  nyanFrameMs,
+  nyanEachFrames,
   nyanRainbow,
   nyanSpace,
   nyanTooltip,
@@ -60,6 +59,7 @@ export const createNyan = () => {
     nyanDisplayPercent,
     nyanDisplayBorder,
     nyanAction,
+    nyanFrames,
     nyanAnimation,
   }: NyanModeOptions): Disposable | undefined => {
     const nyanBar = window.createStatusBarItem(
@@ -103,7 +103,10 @@ export const createNyan = () => {
       onDidChangeFactory(nyanAction)
     );
 
-    const changeOba = operatorFactory(changeSubject, nyanAnimation).pipe(
+    const changeOba = operatorFactory(changeSubject, {
+      nyanAnimation,
+      nyanFrames,
+    }).pipe(
       takeWhile(() => {
         const isActive = !!window.activeTextEditor;
         if (!isActive) {
@@ -196,14 +199,19 @@ const changeObservableFactory = (
 
 const operatorFactory = (
   oba: Observable<void>,
-  nyanAnimation: NyanModeOptions["nyanAnimation"]
+  {
+    nyanAnimation,
+    nyanFrames,
+  }: Pick<NyanModeOptions, "nyanAnimation" | "nyanFrames">
 ): Observable<string> => {
+  const frameMs = makeFrameMs(nyanFrames);
+
   if (nyanAnimation === "quiet") {
     return oba.pipe(
       exhaustMap(() =>
-        interval(nyanFrameMs).pipe(
-          map((i) => nyanFrames[i]),
-          take(nyanFrames.length)
+        interval(frameMs).pipe(
+          map((i) => nyanEachFrames[i]),
+          take(nyanEachFrames.length)
         )
       )
     );
@@ -212,10 +220,10 @@ const operatorFactory = (
   let i = 0;
   if (nyanAnimation === "active") {
     return combineLatest([
-      interval(nyanFrameMs).pipe(
+      interval(frameMs).pipe(
         map(() => {
-          const frame = nyanFrames[i++];
-          if (i >= nyanFrames.length) {
+          const frame = nyanEachFrames[i++];
+          if (i >= nyanEachFrames.length) {
             i = 0;
           }
           return frame;
@@ -225,7 +233,7 @@ const operatorFactory = (
     ]).pipe(map(([face]) => face));
   }
 
-  return oba.pipe(map(() => nyanFrames[0]));
+  return oba.pipe(map(() => nyanEachFrames[0]));
 };
 
 const nyanIndex = (

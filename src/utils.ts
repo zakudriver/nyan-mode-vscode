@@ -26,3 +26,5 @@ export const getConfig = (
     };
   }, {} as NyanModeOptions);
 };
+
+export const makeFrameMs = (frames: number) => (1 / frames) * 1000;

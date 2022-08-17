@@ -8,4 +8,5 @@ export interface NyanModeOptions {
   nyanDisplayBorder: boolean;
   nyanAction: "scrolling" | "moving";
   nyanAnimation: "quiet" | "active" | "none";
+  nyanFrames: number;
 }

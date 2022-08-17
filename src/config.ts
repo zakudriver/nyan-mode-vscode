@@ -10,17 +10,16 @@ export const nyanDefConf: NyanModeOptions = {
   nyanDisplayBorder: false,
   nyanAction: "scrolling",
   nyanAnimation: "quiet",
+  nyanFrames: 20,
 };
 
 export const nyanConfPrefix = "nyanMode";
-
-export const nyanFrameMs = (1 / 20) * 1000;
 
 export const nyanSpace = "$(nyan-space)";
 
 export const nyanRainbow = "$(nyan-rainbow)";
 
-export const nyanFrames = [
+export const nyanEachFrames = [
   "$(nyan-0)",
   "$(nyan-1)",
   "$(nyan-2)",

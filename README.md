@@ -32,18 +32,20 @@ This extension contributes the following settings:
 * `nyanMode.nyanDisplayBorder`: if it's true, display a border on either side of nyan. Like this [xxx].
 * `nyanMode.nyanAction`: nyan-mode's action mode. The 'moving' mode which uses cursor activity to control the progress bar, and the ‘scrolling’ mode uses the scroll bar to control. 
 * `nyanMode.nyanAnimation`: nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still.
+* `nyanMode.nyanFrames`: nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects.
 
 Default value:
 ```typescript
 export interface NyanModeOptions {
-  nyanDisable?: boolean;                        // default: false
-  nyanAlign?: "left" | "right";                 // default: "left"
-  nyanPriority?: number;                        // default: 0
-  nyanColor?: string;                           // default: "#fff"
-  nyanLength?: number;                          // default: 20
-  nyanDisplayPercent?: boolean;                 // default: false
-  nyanAction?: "scrolling" | "moving";          // default: "scrolling"
-  nyanAnimation?: "quiet" | "active" | "none";  // default: "quiet"
+  nyanDisable: boolean;                        // default: false
+  nyanAlign: "left" | "right";                 // default: "left"
+  nyanPriority: number;                        // default: 0
+  nyanColor: string;                           // default: "#fff"
+  nyanLength: number;                          // default: 20
+  nyanDisplayPercent: boolean;                 // default: false
+  nyanAction: "scrolling" | "moving";          // default: "scrolling"
+  nyanAnimation: "quiet" | "active" | "none";  // default: "quiet"
+  nyanFrames: number;                          // default: 20
 }
 ```
 
@@ -55,13 +57,17 @@ Now nothings.
 
 ## Release Notes
 
+### 1.3.3
+
+Expose the `nyanFrames` options. Not recommend to modify.
+
 ### 1.3.2
 
-optimize delay of between animation and event. 
+Optimize delay of between animation and event. 
 
 ### 1.3.1
 
-to reduce debounceTime; optimize onDidChangeTextEditorSelection call; hide nyan and to unsubscribe.
+To reduce debounceTime; optimize onDidChangeTextEditorSelection call; hide nyan and to unsubscribe.
 
 ### 1.3.0
 
