@@ -59,7 +59,7 @@ Now nothings.
 
 ## Release Notes
 
-### 1.3.3
+### 1.4.0
 
 Now nyan's rainbow can be active. And expose the `nyanRainbowAnimation` options, if it's TRUE will be enable.
 
