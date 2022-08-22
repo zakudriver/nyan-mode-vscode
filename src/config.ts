@@ -11,13 +11,14 @@ export const nyanDefConf: NyanModeOptions = {
   nyanAction: "scrolling",
   nyanAnimation: "quiet",
   nyanFrames: 20,
+  nyanRainbowAnimation: false,
 };
 
 export const nyanConfPrefix = "nyanMode";
 
 export const nyanSpace = "$(nyan-space)";
 
-export const nyanRainbow = "$(nyan-rainbow)";
+export const nyanRainbows = ["$(nyan-rainbow)", "$(nyan-rainbow-1)"];
 
 export const nyanEachFrames = [
   "$(nyan-0)",

@@ -2,7 +2,7 @@
   "name": "nyan-mode",
   "displayName": "nyan-mode",
   "description": "emacs nyan-mode on vscode",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "publisher": "zakudriver",
   "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
@@ -22,63 +22,70 @@
         "description": "nyan rainbow",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
+        }
+      },
+      "nyan-rainbow-1": {
+        "description": "nyan rainbow reversed",
+        "default": {
+          "fontPath": "./nyan.woff",
+          "fontCharacter": ""
         }
       },
       "nyan-space": {
         "description": "nyan space",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-0": {
         "description": "1frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-1": {
         "description": "2frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-2": {
         "description": "3frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-3": {
         "description": "4frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-4": {
         "description": "5frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-5": {
         "description": "6frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-6": {
         "description": "7frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-7": {
@@ -92,28 +99,28 @@
         "description": "9frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-9": {
         "description": "10frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-10": {
         "description": "11frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-11": {
         "description": "12frame",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       }
     },
@@ -178,10 +185,15 @@
           ],
           "description": "Nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still."
         },
+        "nyanMode.nyanRainbowAnimation": {
+          "type": "boolean",
+          "default": false,
+          "description": "Nyan rainbow animation. If it's true, rainbow will be active."
+        },
         "nyanMode.nyanFrames": {
           "type": "number",
           "default": 20,
-          "description": "Nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects "
+          "description": "Nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects."
         }
       }
     }

@@ -9,4 +9,5 @@ export interface NyanModeOptions {
   nyanAction: "scrolling" | "moving";
   nyanAnimation: "quiet" | "active" | "none";
   nyanFrames: number;
+  nyanRainbowAnimation: boolean;
 }

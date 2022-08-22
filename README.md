@@ -32,6 +32,7 @@ This extension contributes the following settings:
 * `nyanMode.nyanDisplayBorder`: if it's true, display a border on either side of nyan. Like this [xxx].
 * `nyanMode.nyanAction`: nyan-mode's action mode. The 'moving' mode which uses cursor activity to control the progress bar, and the ‘scrolling’ mode uses the scroll bar to control. 
 * `nyanMode.nyanAnimation`: nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still.
+* `nyanMode.nyanRainbowAnimation`: nyan rainbow animation. If it's true, rainbow will be active.
 * `nyanMode.nyanFrames`: nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects.
 
 Default value:
@@ -45,6 +46,7 @@ export interface NyanModeOptions {
   nyanDisplayPercent: boolean;                 // default: false
   nyanAction: "scrolling" | "moving";          // default: "scrolling"
   nyanAnimation: "quiet" | "active" | "none";  // default: "quiet"
+  nyanRainbowAnimation: boolean;               // default: false
   nyanFrames: number;                          // default: 20
 }
 ```
@@ -56,6 +58,10 @@ export interface NyanModeOptions {
 Now nothings.
 
 ## Release Notes
+
+### 1.3.3
+
+Now nyan's rainbow can be active. And expose the `nyanRainbowAnimation` options, if it's TRUE will be enable.
 
 ### 1.3.3
 

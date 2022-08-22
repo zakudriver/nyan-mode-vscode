@@ -22,7 +22,7 @@ import {
   nyanDefConf,
   nyanConfPrefix,
   nyanEachFrames,
-  nyanRainbow,
+  nyanRainbows,
   nyanSpace,
   nyanTooltip,
   nyanDebounceMs,
@@ -61,6 +61,7 @@ export const createNyan = () => {
     nyanAction,
     nyanFrames,
     nyanAnimation,
+    nyanRainbowAnimation,
   }: NyanModeOptions): Disposable | undefined => {
     const nyanBar = window.createStatusBarItem(
       nyanAlign === "right"
@@ -79,7 +80,7 @@ export const createNyan = () => {
     const container = new Array(nyanLength).fill("");
     const makeRate = nyanAction === "scrolling" ? scrollingRate : movingRate;
 
-    const nyanRun = (face: string): void => {
+    const nyanRun = ([face, rainbow]: readonly [number, number]): void => {
       const editor = window.activeTextEditor;
 
       if (!editor) {
@@ -87,13 +88,19 @@ export const createNyan = () => {
         return;
       }
 
-      const index = nyanIndex(makeRate, nyanLength);
+      const rate = makeRate(editor);
+      const index = nyanIndex(rate, nyanLength);
 
-      const str = nyanFactory(container, face, index);
+      const str = nyanFactory(
+        container,
+        nyanEachFrames[face],
+        nyanRainbows[rainbow],
+        index
+      );
       const nyanStr = nyanDisplayBorder ? `[${str}]` : str;
 
       nyanBar.text = nyanDisplayPercent
-        ? `${nyanStr}  ${makePercent(makeRate(editor))}`
+        ? `${nyanStr}  ${makePercent(rate)}`
         : nyanStr;
 
       nyanBar.show();
@@ -103,8 +110,9 @@ export const createNyan = () => {
       onDidChangeFactory(nyanAction)
     );
 
-    const changeOba = operatorFactory(changeSubject, {
+    const changeOba = nyanAnimationObservableFactory(changeSubject, {
       nyanAnimation,
+      nyanRainbowAnimation,
       nyanFrames,
     }).pipe(
       takeWhile(() => {
@@ -122,18 +130,13 @@ export const createNyan = () => {
     let changeSubs = subscribeChange();
     window.activeTextEditor && changeSubject.next();
 
-    const hideNyan = () => {
-      nyanBar.hide();
-      changeSubs.unsubscribe();
-    };
-
-    const changeVisibleSub = changeVisibleFactory().subscribe((visible) => {
-      if (visible) {
+    const changeActiveSub = changeActiveFactory().subscribe((isActive) => {
+      if (isActive) {
         changeSubs.closed && (changeSubs = subscribeChange());
         changeSubject.next();
-      }
-      if (!visible) {
-        hideNyan();
+      } else {
+        nyanBar.hide();
+        changeSubs.unsubscribe();
       }
     });
 
@@ -141,7 +144,7 @@ export const createNyan = () => {
       nyanBar.dispose();
       changeSubject.complete();
       changeSubs.unsubscribe();
-      changeVisibleSub.unsubscribe();
+      changeActiveSub.unsubscribe();
     });
   };
 
@@ -197,20 +200,51 @@ const changeObservableFactory = (
   return subject;
 };
 
-const operatorFactory = (
+const rainbowIndexFactory = (
+  nyanRainbowAnimation: NyanModeOptions["nyanRainbowAnimation"],
+  times = 4
+) => {
+  let count = 0,
+    rainbowIndex = 0;
+
+  if (nyanRainbowAnimation) {
+    return () => {
+      if (count > times - 1) {
+        count = 0;
+      }
+
+      if (count++) {
+        return rainbowIndex;
+      }
+
+      rainbowIndex = rainbowIndex ? 0 : 1;
+      return rainbowIndex;
+    };
+  }
+
+  return () => 0;
+};
+
+const nyanAnimationObservableFactory = (
   oba: Observable<void>,
   {
     nyanAnimation,
+    nyanRainbowAnimation,
     nyanFrames,
-  }: Pick<NyanModeOptions, "nyanAnimation" | "nyanFrames">
-): Observable<string> => {
+  }: Pick<
+    NyanModeOptions,
+    "nyanAnimation" | "nyanFrames" | "nyanRainbowAnimation"
+  >
+): Observable<readonly [number, number]> => {
   const frameMs = makeFrameMs(nyanFrames);
+
+  const rainbowIndex = rainbowIndexFactory(nyanRainbowAnimation);
 
   if (nyanAnimation === "quiet") {
     return oba.pipe(
       exhaustMap(() =>
         interval(frameMs).pipe(
-          map((i) => nyanEachFrames[i]),
+          map((i) => [i, rainbowIndex()] as const),
           take(nyanEachFrames.length)
         )
       )
@@ -222,47 +256,47 @@ const operatorFactory = (
     return combineLatest([
       interval(frameMs).pipe(
         map(() => {
-          const frame = nyanEachFrames[i++];
           if (i >= nyanEachFrames.length) {
             i = 0;
           }
-          return frame;
+
+          return [i++, rainbowIndex()] as const;
         })
       ),
       oba,
-    ]).pipe(map(([face]) => face));
+    ]).pipe(map(([$]) => $));
   }
 
-  return oba.pipe(map(() => nyanEachFrames[0]));
+  return oba.pipe(map(() => [0, 0]));
 };
 
-const nyanIndex = (
-  rateFn: (editor: TextEditor) => number,
-  nyanLen: number
-): number => {
+const nyanIndex = (rate: number, nyanLen: number): number => {
   const editor = window.activeTextEditor;
   if (editor) {
-    const index = Math.round(rateFn(editor) * nyanLen);
+    const index = Math.round(rate * nyanLen);
 
     return nyanLen > index ? index : nyanLen - 1;
   }
   return 0;
 };
 
-const changeVisibleFactory = (): Observable<boolean> =>
+const changeActiveFactory = (): Observable<boolean> =>
   new Observable<boolean>((ob) => {
-    const dis = window.onDidChangeVisibleTextEditors((e) =>
-      ob.next(!!e.length)
-    );
+    const dis = window.onDidChangeActiveTextEditor((e) => ob.next(!!e));
 
     return () => dis.dispose();
   }).pipe(debounceTime(nyanDebounceMs));
 
-const nyanFactory = (container: string[], face: string, index: number) =>
+const nyanFactory = (
+  container: string[],
+  face: string,
+  rainbow: string,
+  index: number
+) =>
   container
     .map((_, i) => {
       if (i < index) {
-        return nyanRainbow;
+        return rainbow;
       } else if (i === index) {
         return face;
       }
