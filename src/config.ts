@@ -4,14 +4,13 @@ export const nyanDefConf: NyanModeOptions = {
   nyanDisable: false,
   nyanAlign: "left",
   nyanPriority: 0,
-  nyanColor: "#fff",
-  nyanLength: 20,
+  nyanColor: "#f99cf7",
+  nyanLength: 30,
   nyanDisplayPercent: false,
-  nyanDisplayBorder: false,
   nyanAction: "scrolling",
   nyanAnimation: "quiet",
+  nyanRainbowAnimation: true,
   nyanFrames: 20,
-  nyanRainbowAnimation: false,
 };
 
 export const nyanConfPrefix = "nyanMode";

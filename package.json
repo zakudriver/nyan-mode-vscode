@@ -2,7 +2,7 @@
   "name": "nyan-mode",
   "displayName": "nyan-mode",
   "description": "emacs nyan-mode on vscode",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "publisher": "zakudriver",
   "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
@@ -22,7 +22,7 @@
         "description": "nyan rainbow",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-rainbow-1": {
@@ -36,7 +36,7 @@
         "description": "nyan space",
         "default": {
           "fontPath": "./nyan.woff",
-          "fontCharacter": ""
+          "fontCharacter": ""
         }
       },
       "nyan-0": {
@@ -148,23 +148,18 @@
         },
         "nyanMode.nyanColor": {
           "type": "string",
-          "default": "#fff",
+          "default": "#f99cf7",
           "description": "Nyan-mode's color."
         },
         "nyanMode.nyanLength": {
           "type": "number",
-          "default": 20,
+          "default": 30,
           "description": "Nyan-mode's lenght."
         },
         "nyanMode.nyanDisplayPercent": {
           "type": "boolean",
           "default": false,
           "description": "If it's true, display position percent to the right of nyan."
-        },
-        "nyanMode.nyanDisplayBorder": {
-          "type": "boolean",
-          "default": false,
-          "description": "If it's true, display a border on either side of nyan. Like this [xxx]."
         },
         "nyanMode.nyanAction": {
           "type": "string",
@@ -187,7 +182,7 @@
         },
         "nyanMode.nyanRainbowAnimation": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Nyan rainbow animation. If it's true, rainbow will be active."
         },
         "nyanMode.nyanFrames": {

@@ -5,7 +5,6 @@ export interface NyanModeOptions {
   nyanColor: string;
   nyanLength: number;
   nyanDisplayPercent: boolean;
-  nyanDisplayBorder: boolean;
   nyanAction: "scrolling" | "moving";
   nyanAnimation: "quiet" | "active" | "none";
   nyanFrames: number;
