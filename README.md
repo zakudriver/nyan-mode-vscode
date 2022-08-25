@@ -58,6 +58,10 @@ Now nothings.
 
 ## Release Notes
 
+### 1.4.2
+
+Optimize `onDidChangeTextEditorVisibleRanges` event.
+
 ### 1.4.1
 
 Rainbow animation more smooth.

@@ -104,8 +104,10 @@ export const createNyan = () => {
       nyanBar.show();
     };
 
+    const prev = prevPositionFactory();
+
     const changeSubject = changeObservableFactory(
-      onDidChangeFactory(nyanAction)
+      onDidChangeFactory(nyanAction, prev)
     );
 
     const changeOba = nyanAnimationObservableFactory(changeSubject, {
@@ -127,15 +129,17 @@ export const createNyan = () => {
     let changeSubs = subscribeChange();
     window.activeTextEditor && changeSubject.next();
 
-    const changeActiveSub = changeActiveFactory().subscribe((isActive) => {
-      if (isActive) {
-        changeSubs.closed && (changeSubs = subscribeChange());
-        changeSubject.next();
-      } else {
-        nyanBar.hide();
-        changeSubs.unsubscribe();
+    const changeActiveSub = changeActiveFactory(nyanAction, prev).subscribe(
+      (isActive) => {
+        if (isActive) {
+          changeSubs.closed && (changeSubs = subscribeChange());
+          changeSubject.next();
+        } else {
+          nyanBar.hide();
+          changeSubs.unsubscribe();
+        }
       }
-    });
+    );
 
     return new Disposable(() => {
       nyanBar.dispose();
@@ -163,23 +167,37 @@ const scrollingRate = ({ visibleRanges, document }: TextEditor): number => {
   return 1;
 };
 
+const prevPositionFactory = (): ((num?: number) => number) => {
+  let prev = 0;
+  return (num?: number): number => {
+    if (typeof num !== "undefined") {
+      prev = num;
+    }
+    return prev;
+  };
+};
+
 const onDidChangeFactory = (
-  action: NyanModeOptions["nyanAction"]
+  action: NyanModeOptions["nyanAction"],
+  prev: (num?: number) => number
 ): ((fn: () => void) => Disposable) =>
   action === "scrolling"
-    ? window.onDidChangeTextEditorVisibleRanges
-    : (fn: () => void) => {
-        let prev = 0;
-
-        return window.onDidChangeTextEditorSelection((e) => {
-          const cur = e.textEditor.selection.end.line;
-
-          if (prev !== cur) {
+    ? (fn: () => void) =>
+        window.onDidChangeTextEditorVisibleRanges(({ visibleRanges }) => {
+          const cur = visibleRanges.length ? visibleRanges[0].end.line : 0;
+          if (prev() !== cur) {
             fn();
           }
-          prev = cur;
+          prev(cur);
+        })
+    : (fn: () => void) =>
+        window.onDidChangeTextEditorSelection(({ textEditor }) => {
+          const cur = textEditor.selection.end.line;
+          if (prev() !== cur) {
+            fn();
+          }
+          prev(cur);
         });
-      };
 
 const changeObservableFactory = (
   onDidChange: (fn: () => void) => Disposable
@@ -241,9 +259,20 @@ const nyanIndex = (rate: number, nyanLen: number): number => {
   return 0;
 };
 
-const changeActiveFactory = (): Observable<boolean> =>
+const changeActiveFactory = (
+  nyanAction: NyanModeOptions["nyanAction"],
+  prev: (num?: number) => number
+): Observable<boolean> =>
   new Observable<boolean>((ob) => {
-    const dis = window.onDidChangeActiveTextEditor((e) => ob.next(!!e));
+    const dis = window.onDidChangeActiveTextEditor((e) => {
+      ob.next(!!e);
+
+      if (nyanAction === "scrolling") {
+        prev(e?.visibleRanges[0].end.line || 0);
+      } else {
+        prev(0);
+      }
+    });
 
     return () => dis.dispose();
   }).pipe(debounceTime(nyanDebounceMs));
