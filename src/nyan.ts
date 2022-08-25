@@ -267,11 +267,7 @@ const changeActiveFactory = (
     const dis = window.onDidChangeActiveTextEditor((e) => {
       ob.next(!!e);
 
-      if (nyanAction === "scrolling") {
-        prev(e?.visibleRanges[0].end.line || 0);
-      } else {
-        prev(0);
-      }
+      prev((nyanAction === "scrolling" && e?.visibleRanges[0].end.line) || 0);
     });
 
     return () => dis.dispose();
