@@ -1,6 +1,6 @@
 # [nyan-mode](https://github.com/zakudriver/nyan-mode-vscode)
 
-<a href="https://github.com/zakudriver/nyan-mode-vscode">
+<a href="https://marketplace.visualstudio.com/items?itemName=zakudriver.nyan-mode">
   <img alt="version" src="https://vsmarketplacebadge.apphb.com/version-short/zakudriver.nyan-mode.svg" />
 </a>
 
