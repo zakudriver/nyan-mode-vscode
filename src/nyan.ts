@@ -162,13 +162,9 @@ export const createNyan = () => {
         nyanRainbowAnimation
       );
 
-      // nyanBar.text = nyanDisplayPercent
-      //   ? `${nyanStr}  ${makePercent(rate)}`
-      //   : nyanStr;
       nyanBar.text = nyanStr;
 
       percentBar && (percentBar.text = makePercent(rate));
-      // !percentBar && show();
     };
 
     const prevPosit = prevPositionFactory();

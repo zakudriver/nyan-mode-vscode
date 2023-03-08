@@ -57,7 +57,7 @@ Now nothings.
 
 ## Release Notes
 
-### 1.5.0
+### 1.5.1
 
 Optimize code for performance. And new feature `nyanDiagnostics`.
 
