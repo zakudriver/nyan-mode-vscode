@@ -11,6 +11,7 @@ export const nyanDefConf: NyanModeOptions = {
   nyanAnimation: "quiet",
   nyanRainbowAnimation: true,
   nyanFrames: 20,
+  nyanDiagnostics: true,
 };
 
 export const nyanConfPrefix = "nyanMode";

@@ -2,7 +2,7 @@
   "name": "nyan-mode",
   "displayName": "nyan-mode",
   "description": "emacs nyan-mode on vscode",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "publisher": "zakudriver",
   "repository": "https://github.com/zakudriver/nyan-mode-vscode",
   "engines": {
@@ -149,12 +149,12 @@
         "nyanMode.nyanColor": {
           "type": "string",
           "default": "#f99cf7",
-          "description": "Nyan-mode's color."
+          "description": "Nyan-mode color."
         },
         "nyanMode.nyanLength": {
           "type": "number",
           "default": 30,
-          "description": "Nyan-mode's lenght."
+          "description": "Nyan cat lenght."
         },
         "nyanMode.nyanDisplayPercent": {
           "type": "boolean",
@@ -168,7 +168,7 @@
             "scrolling",
             "moving"
           ],
-          "description": "Nyan-mode's action mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
+          "description": "Nyan-mode action mode. The 'line' mode is based on the line where the cursor resides, and the 'range' is based on the view range."
         },
         "nyanMode.nyanAnimation": {
           "type": "string",
@@ -178,17 +178,22 @@
             "quiet",
             "active"
           ],
-          "description": "Nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still."
+          "description": "Nyan-mode animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still."
         },
         "nyanMode.nyanRainbowAnimation": {
           "type": "boolean",
           "default": true,
-          "description": "Nyan rainbow animation. If it's true, rainbow will be active."
+          "description": "Nyan-mode rainbow animation. If it's true, rainbow will be active."
         },
         "nyanMode.nyanFrames": {
           "type": "number",
           "default": 20,
-          "description": "Nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects."
+          "description": "Nyan-mode animation frames. Not recommend to modify, it’s a balanced status between performance and effects."
+        },
+        "nyanMode.nyanDiagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Nyan-mode diagnostics display. If it's true, nyan will display `error` and `warning` status for current tab by different colors to distinguish. If `nyanDisplayPercent` is false, `error` status has the highest priority."
         }
       }
     }

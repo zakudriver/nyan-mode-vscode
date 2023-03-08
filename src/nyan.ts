@@ -4,6 +4,8 @@ import {
   TextEditor,
   workspace,
   Disposable,
+  StatusBarItem,
+  ThemeColor,
 } from "vscode";
 import {
   debounceTime,
@@ -17,7 +19,7 @@ import {
   takeWhile,
 } from "rxjs";
 import { makePercent, getConfig, makeFrameMs } from "./utils";
-import { NyanModeOptions } from "./types";
+import { NyanModeOptions, SetColor } from "./types";
 import {
   nyanDefConf,
   nyanConfPrefix,
@@ -27,6 +29,7 @@ import {
   nyanTooltip,
   nyanDebounceMs,
 } from "./config";
+import { diagnostics } from "./diagnostics";
 
 const configObservable = (
   init: NyanModeOptions,
@@ -49,6 +52,68 @@ const configObservable = (
   return Disposable.from(dis, new Disposable(() => nextDis?.dispose()));
 };
 
+const createNyanBar = ({
+  nyanAlign,
+  nyanColor,
+  nyanPriority,
+  nyanDisplayPercent,
+}: Pick<
+  NyanModeOptions,
+  "nyanAlign" | "nyanColor" | "nyanPriority" | "nyanDisplayPercent"
+>) => {
+  const nyanBar = window.createStatusBarItem(
+    nyanAlign === "right" ? StatusBarAlignment.Right : StatusBarAlignment.Left,
+    nyanPriority
+  );
+
+  nyanBar.tooltip = nyanTooltip;
+
+  let percentBar: StatusBarItem | undefined;
+  if (nyanDisplayPercent) {
+    percentBar = window.createStatusBarItem(
+      nyanAlign === "right"
+        ? StatusBarAlignment.Right
+        : StatusBarAlignment.Left,
+      nyanPriority
+    );
+
+    percentBar.tooltip = nyanTooltip;
+  }
+
+  const show = () => {
+    nyanBar.show();
+    percentBar?.show();
+  };
+
+  const hide = () => {
+    nyanBar.hide();
+    percentBar?.hide();
+  };
+
+  const setColor: SetColor = (color = nyanColor) => {
+    if (Array.isArray(color)) {
+      const [nyanColor, percentColor] = color as [
+        ThemeColor | string,
+        ThemeColor | string
+      ];
+      nyanBar.color = nyanColor;
+      percentBar && (percentBar.color = percentColor);
+    } else {
+      nyanBar.color = color;
+      percentBar && (percentBar.color = color);
+    }
+  };
+
+  setColor();
+
+  const dispose = () => {
+    nyanBar.dispose();
+    percentBar?.dispose();
+  };
+
+  return { nyanBar, percentBar, show, hide, setColor, dispose };
+};
+
 export const createNyan = () => {
   const nyan = ({
     nyanDisable,
@@ -61,18 +126,18 @@ export const createNyan = () => {
     nyanFrames,
     nyanAnimation,
     nyanRainbowAnimation,
+    nyanDiagnostics,
   }: NyanModeOptions): Disposable | undefined => {
-    const nyanBar = window.createStatusBarItem(
-      nyanAlign === "right"
-        ? StatusBarAlignment.Right
-        : StatusBarAlignment.Left,
-      nyanPriority
-    );
-    nyanBar.color = nyanColor;
-    nyanBar.tooltip = nyanTooltip;
+    const { nyanBar, percentBar, show, hide, setColor, dispose } =
+      createNyanBar({
+        nyanAlign,
+        nyanPriority,
+        nyanColor,
+        nyanDisplayPercent,
+      });
 
     if (nyanDisable) {
-      nyanBar.hide();
+      hide();
       return;
     }
 
@@ -83,7 +148,7 @@ export const createNyan = () => {
       const editor = window.activeTextEditor;
 
       if (!editor) {
-        nyanBar.hide();
+        hide();
         return;
       }
 
@@ -97,55 +162,70 @@ export const createNyan = () => {
         nyanRainbowAnimation
       );
 
-      nyanBar.text = nyanDisplayPercent
-        ? `${nyanStr}  ${makePercent(rate)}`
-        : nyanStr;
+      // nyanBar.text = nyanDisplayPercent
+      //   ? `${nyanStr}  ${makePercent(rate)}`
+      //   : nyanStr;
+      nyanBar.text = nyanStr;
 
-      nyanBar.show();
+      percentBar && (percentBar.text = makePercent(rate));
+      // !percentBar && show();
     };
 
-    const prev = prevPositionFactory();
+    const prevPosit = prevPositionFactory();
 
-    const changeSubject = changeObservableFactory(
-      onDidChangeFactory(nyanAction, prev)
+    const changeTextEditorOba = changeTextEditorObservableFactory(
+      onDidChangeTextEditorFactory(nyanAction, prevPosit)
     );
 
-    const changeOba = nyanAnimationObservableFactory(changeSubject, {
+    const nyanRunOba = nyanAnimationObservableFactory(changeTextEditorOba, {
       nyanAnimation,
       nyanFrames,
     }).pipe(
       takeWhile(() => {
         const isActive = !!window.activeTextEditor;
         if (!isActive) {
-          nyanBar.hide();
+          hide();
         }
 
         return isActive;
-      })
+      }),
+      debounceTime(nyanDebounceMs)
     );
 
-    const subscribeChange = () => changeOba.subscribe(nyanRun);
+    const subscribeNyanRun = () => nyanRunOba.subscribe(nyanRun);
 
-    let changeSubs = subscribeChange();
-    window.activeTextEditor && changeSubject.next();
+    let nyanRunSubs = subscribeNyanRun();
+    window.activeTextEditor && changeTextEditorOba.next();
+    show();
 
-    const changeActiveSub = changeActiveFactory(nyanAction, prev).subscribe(
+    const changeActiveTextEditor$ = changeActiveTextEditorFactory(
       (isActive) => {
         if (isActive) {
-          changeSubs.closed && (changeSubs = subscribeChange());
-          changeSubject.next();
+          nyanRunSubs.closed && (nyanRunSubs = subscribeNyanRun());
+          changeTextEditorOba.next();
+          show();
         } else {
-          nyanBar.hide();
-          changeSubs.unsubscribe();
+          hide();
+          nyanRunSubs.unsubscribe();
         }
+      },
+      (e?: TextEditor) => {
+        prevPosit(
+          (nyanAction === "scrolling" && e?.visibleRanges[0].end.line) || 0
+        );
       }
     );
 
+    const diagnosticsDis = nyanDiagnostics
+      ? diagnostics(changeActiveTextEditor$, setColor)
+      : undefined;
+
     return new Disposable(() => {
-      nyanBar.dispose();
-      changeSubject.complete();
-      changeSubs.unsubscribe();
-      changeActiveSub.unsubscribe();
+      dispose();
+      diagnosticsDis?.();
+
+      changeTextEditorOba.complete();
+      nyanRunSubs.unsubscribe();
     });
   };
 
@@ -177,7 +257,7 @@ const prevPositionFactory = (): ((num?: number) => number) => {
   };
 };
 
-const onDidChangeFactory = (
+const onDidChangeTextEditorFactory = (
   action: NyanModeOptions["nyanAction"],
   prev: (num?: number) => number
 ): ((fn: () => void) => Disposable) =>
@@ -199,7 +279,7 @@ const onDidChangeFactory = (
           prev(cur);
         });
 
-const changeObservableFactory = (
+const changeTextEditorObservableFactory = (
   onDidChange: (fn: () => void) => Disposable
 ): Subject<void> => {
   const subject = new Subject<void>();
@@ -259,19 +339,21 @@ const nyanIndex = (rate: number, nyanLen: number): number => {
   return 0;
 };
 
-const changeActiveFactory = (
-  nyanAction: NyanModeOptions["nyanAction"],
-  prev: (num?: number) => number
-): Observable<boolean> =>
-  new Observable<boolean>((ob) => {
+const changeActiveTextEditorFactory = (
+  fn: (isActive: boolean) => void,
+  prevPositFn: (e?: TextEditor) => void
+) => {
+  return new Observable<TextEditor | undefined>((ob) => {
     const dis = window.onDidChangeActiveTextEditor((e) => {
-      ob.next(!!e);
+      ob.next(e);
 
-      prev((nyanAction === "scrolling" && e?.visibleRanges[0].end.line) || 0);
+      fn(!!e);
+      prevPositFn(e);
     });
 
     return () => dis.dispose();
-  }).pipe(debounceTime(nyanDebounceMs));
+  });
+};
 
 const nyanFactory = (
   container: string[],

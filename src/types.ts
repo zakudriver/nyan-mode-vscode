@@ -1,3 +1,5 @@
+import { ThemeColor } from "vscode";
+
 export interface NyanModeOptions {
   nyanDisable: boolean;
   nyanAlign: "left" | "right";
@@ -9,4 +11,11 @@ export interface NyanModeOptions {
   nyanAnimation: "quiet" | "active" | "none";
   nyanFrames: number;
   nyanRainbowAnimation: boolean;
+  nyanDiagnostics: boolean;
+}
+
+export interface SetColor {
+  (
+    color?: ThemeColor | string | [ThemeColor | string, ThemeColor | string]
+  ): void;
 }

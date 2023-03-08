@@ -23,16 +23,17 @@ Since vscode statusbar supports string only, so i only remake terminal edition.
 
 This extension contributes the following settings:
 
-* `nyanMode.nyanDisable`: enable or disable nyan-mode.
-* `nyanMode.nyanAlign`: nyan-mode show at statusbar of 'left' or 'right'.
-* `nyanMode.nyanPriority`: position priority, higher values mean nyan-mode should be shown more to the left.
-* `nyanMode.nyanColor`: nyan-mode's color.
-* `nyanMode.nyanLength`: nyan-mode's length.
-* `nyanMode.nyanDisplayPercent`: if it's true, display position percent to the right of nyan.
-* `nyanMode.nyanAction`: nyan-mode's action mode. The 'moving' mode which uses cursor activity to control the progress bar, and the ‘scrolling’ mode uses the scroll bar to control. 
-* `nyanMode.nyanAnimation`: nyan-mode's animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still.
-* `nyanMode.nyanRainbowAnimation`: nyan rainbow animation. If it's true, rainbow will be active.
-* `nyanMode.nyanFrames`: nyan animation frames. Not recommend to modify, it’s a balanced status between performance and effects.
+* `nyanMode.nyanDisable`: Enable or disable nyan-mode.
+* `nyanMode.nyanAlign`: Nyan-mode show at statusbar of 'left' or 'right'.
+* `nyanMode.nyanPriority`: Position priority, higher values mean nyan-mode should be shown more to the left.
+* `nyanMode.nyanColor`: Nyan-mode color.
+* `nyanMode.nyanLength`: Nyan-cat length.
+* `nyanMode.nyanDisplayPercent`: If it's `true`, display position percent to the right of nyan.
+* `nyanMode.nyanAction`: Nyan-mode action mode. The 'moving' mode which uses cursor activity to control the progress bar, and the ‘scrolling’ mode uses the scroll bar to control. 
+* `nyanMode.nyanAnimation`: Nyan-mode animation mode. When turns to QUITE mode, nyan only be active when scroll or move the cursor, when turns to ACTIVE mode, nyan will be always active, and turns to NONE mode will be still.
+* `nyanMode.nyanRainbowAnimation`: Nyan-mode rainbow animation. If it's `true`, rainbow will be active.
+* `nyanMode.nyanFrames`: Nyan-mode animation frames. Not recommend to modify, it’s a balanced status between performance and effects.
+* `nyanMode.nyanDiagnostics`: Nyan-mode diagnostics display. If it's `true`, nyan will display `error` and `warning` status for current tab by different colors to distinguish. Notice⚠️: `error` status has the highest priority, so nyan-cat will be `error` status when `nyanDisplayPercent` is `false`. (`error` and `warning` status color from `new ThemeColor("statusBarItem.errorBackground")` and `new ThemeColor("statusBarItem.warningBackground")`)
 
 Default value:
 ```typescript
@@ -47,6 +48,7 @@ export interface NyanModeOptions {
   nyanAnimation: "quiet" | "active" | "none";  // default: "quiet"
   nyanRainbowAnimation: boolean;               // default: true
   nyanFrames: number;                          // default: 20
+  nyanDiagnostics: true;                       // default: true
 }
 ```
 
@@ -57,6 +59,10 @@ export interface NyanModeOptions {
 Now nothings.
 
 ## Release Notes
+
+### 1.5.0
+
+Optimize code for performance. And new feature `nyanDiagnostics`.
 
 ### 1.4.2
 
