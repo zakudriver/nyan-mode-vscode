@@ -34,9 +34,9 @@ import { diagnostics } from "./diagnostics";
 
 const configObservable = (
   init: NyanModeOptions,
-  fn: (config: NyanModeOptions) => Disposable | void,
+  fn: (config: NyanModeOptions) => (() => void) | void,
   prefix = nyanConfPrefix
-): Disposable => {
+): (() => void) => {
   const next = () => {
     const conf = getConfig(init, prefix);
     return fn(conf);
@@ -45,12 +45,15 @@ const configObservable = (
   let nextDis = next();
   const dis = workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration(prefix)) {
-      nextDis?.dispose();
+      nextDis?.();
       nextDis = next();
     }
   });
 
-  return Disposable.from(dis, new Disposable(() => nextDis?.dispose()));
+  return () => {
+    dis.dispose();
+    nextDis?.();
+  };
 };
 
 const createNyanBar = ({
@@ -128,7 +131,7 @@ export const createNyan = () => {
     nyanAnimation,
     nyanRainbowAnimation,
     nyanDiagnostics,
-  }: NyanModeOptions): Disposable | void => {
+  }: NyanModeOptions): (() => void) | void => {
     const { nyanBar, percentBar, show, hide, setColor, dispose } =
       createNyanBar({
         nyanAlign,
@@ -217,16 +220,18 @@ export const createNyan = () => {
       ? diagnostics(changeActiveTextEditor$, setColor)
       : undefined;
 
-    return new Disposable(() => {
+    return () => {
       dispose();
       diagnosticsDis?.();
 
       changeTextEditorOba.complete();
       nyanRunSubs.unsubscribe();
-    });
+    };
   };
 
-  return configObservable(nyanDefConf, nyan);
+  const dis = configObservable(nyanDefConf, nyan);
+
+  return new Disposable(dis);
 };
 
 const movingRate = ({ document, selection }: TextEditor): number =>
@@ -345,22 +350,46 @@ const changeActiveTextEditorFactory = (
   });
 };
 
+// const nyanFactory = (
+//   container: string[],
+//   frame: number,
+//   index: number,
+//   nyanRainbowAnimation: NyanModeOptions["nyanRainbowAnimation"]
+// ): string =>
+//   container
+//     .map((_, i) => {
+//       if (i < index) {
+//         if (nyanRainbowAnimation) {
+//           return nyanRainbows[2 > ((frame + i) & 3) ? 0 : 1];
+//         }
+//         return nyanRainbows[i & 1];
+//       } else if (i === index) {
+//         return nyanEachFrames[frame];
+//       }
+//       return nyanSpace;
+//     })
+//     .join("");
+
 const nyanFactory = (
   container: string[],
   frame: number,
   index: number,
   nyanRainbowAnimation: NyanModeOptions["nyanRainbowAnimation"]
-): string =>
-  container
-    .map((_, i) => {
-      if (i < index) {
-        if (nyanRainbowAnimation) {
-          return nyanRainbows[2 > ((frame + i) & 3) ? 0 : 1];
-        }
-        return nyanRainbows[i & 1];
-      } else if (i === index) {
-        return nyanEachFrames[frame];
+): string => {
+  for (let i = 0; i < container.length; i++) {
+    if (i < index) {
+      if (nyanRainbowAnimation) {
+        container[i] = nyanRainbows[2 > ((frame + i) & 3) ? 0 : 1];
+        continue;
       }
-      return nyanSpace;
-    })
-    .join("");
+      container[i] = nyanRainbows[i & 1];
+      continue;
+    } else if (i === index) {
+      container[i] = nyanEachFrames[frame];
+      continue;
+    }
+    container[i] = nyanSpace;
+  }
+
+  return container.join("");
+};
