@@ -17,6 +17,7 @@ import {
   Subject,
   combineLatest,
   takeWhile,
+  scan,
 } from "rxjs";
 import { makePercent, getConfig, makeFrameMs } from "./utils";
 import { NyanModeOptions, SetColor } from "./types";
@@ -33,7 +34,7 @@ import { diagnostics } from "./diagnostics";
 
 const configObservable = (
   init: NyanModeOptions,
-  fn: (config: NyanModeOptions) => Disposable | undefined,
+  fn: (config: NyanModeOptions) => Disposable | void,
   prefix = nyanConfPrefix
 ): Disposable => {
   const next = () => {
@@ -127,7 +128,7 @@ export const createNyan = () => {
     nyanAnimation,
     nyanRainbowAnimation,
     nyanDiagnostics,
-  }: NyanModeOptions): Disposable | undefined => {
+  }: NyanModeOptions): Disposable | void => {
     const { nyanBar, percentBar, show, hide, setColor, dispose } =
       createNyanBar({
         nyanAlign,
@@ -306,17 +307,10 @@ const nyanAnimationObservableFactory = (
     );
   }
 
-  let i = 0;
   if (nyanAnimation === "active") {
     return combineLatest([
       interval(frameMs).pipe(
-        map(() => {
-          if (i >= nyanEachFrames.length) {
-            i = 0;
-          }
-
-          return i++;
-        })
+        scan((acc) => (acc >= nyanEachFrames.length - 1 ? 0 : ++acc), -1)
       ),
       oba,
     ]).pipe(map(([$]) => $));

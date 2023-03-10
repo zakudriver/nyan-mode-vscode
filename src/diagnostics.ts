@@ -83,9 +83,9 @@ export const diagnostics = (
       ([textEditor]) => textEditor && diagnosticsNyan(textEditor, setColor)
     );
 
-  const dis = languages.onDidChangeDiagnostics((e) => {
-    changeDiagnostics$.next(e);
-  });
+  const dis = languages.onDidChangeDiagnostics((e) =>
+    changeDiagnostics$.next(e)
+  );
 
   return () => {
     dis.dispose();
