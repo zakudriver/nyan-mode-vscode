@@ -30,7 +30,7 @@ import {
   nyanTooltip,
   nyanDebounceMs,
 } from "./config";
-import { diagnostics } from "./diagnostics";
+import { nyanDiagnostics } from "./diagnostics";
 
 const configObservable = (
   init: NyanModeOptions,
@@ -84,6 +84,9 @@ const createNyanBar = ({
     percentBar.tooltip = nyanTooltip;
   }
 
+  nyanBar.color = nyanColor;
+  percentBar && (percentBar.color = nyanColor);
+
   const show = () => {
     nyanBar.show();
     percentBar?.show();
@@ -94,21 +97,20 @@ const createNyanBar = ({
     percentBar?.hide();
   };
 
-  const setColor: SetColor = (color = nyanColor) => {
+  const setColor: SetColor = (color) => {
     if (Array.isArray(color)) {
       const [nyanColor, percentColor] = color as [
         ThemeColor | string,
         ThemeColor | string
       ];
-      nyanBar.color = nyanColor;
-      percentBar && (percentBar.color = percentColor);
+
+      nyanBar.backgroundColor = nyanColor;
+      percentBar && (percentBar.backgroundColor = percentColor);
     } else {
-      nyanBar.color = color;
-      percentBar && (percentBar.color = color);
+      nyanBar.backgroundColor = color;
+      percentBar && (percentBar.backgroundColor = color);
     }
   };
-
-  setColor();
 
   const dispose = () => {
     nyanBar.dispose();
@@ -130,7 +132,7 @@ export const createNyan = () => {
     nyanFrames,
     nyanAnimation,
     nyanRainbowAnimation,
-    nyanDiagnostics,
+    nyanDiagnostics: diagnostics,
   }: NyanModeOptions): (() => void) | void => {
     const { nyanBar, percentBar, show, hide, setColor, dispose } =
       createNyanBar({
@@ -148,7 +150,7 @@ export const createNyan = () => {
     const container = new Array(nyanLength).fill("");
     const makeRate = nyanAction === "scrolling" ? scrollingRate : movingRate;
 
-    const nyanRun = (frame: number): void => {
+    const nyanRun = (frame = 0): void => {
       const editor = window.activeTextEditor;
 
       if (!editor) {
@@ -177,10 +179,13 @@ export const createNyan = () => {
       onDidChangeTextEditorFactory(nyanAction, prevPosit)
     );
 
-    const nyanRunOba = nyanAnimationObservableFactory(changeTextEditorOba, {
-      nyanAnimation,
-      nyanFrames,
-    }).pipe(
+    const nyanRunOba = nyanAnimationObservableFactory(
+      changeTextEditorOba.pipe(debounceTime(nyanDebounceMs)),
+      {
+        nyanAnimation,
+        nyanFrames,
+      }
+    ).pipe(
       takeWhile(() => {
         const isActive = !!window.activeTextEditor;
         if (!isActive) {
@@ -188,13 +193,13 @@ export const createNyan = () => {
         }
 
         return isActive;
-      }),
-      debounceTime(nyanDebounceMs)
+      })
     );
 
     const subscribeNyanRun = () => nyanRunOba.subscribe(nyanRun);
 
     let nyanRunSubs = subscribeNyanRun();
+    // window.activeTextEditor && nyanRun();
     window.activeTextEditor && changeTextEditorOba.next();
     show();
 
@@ -216,8 +221,8 @@ export const createNyan = () => {
       }
     );
 
-    const diagnosticsDis = nyanDiagnostics
-      ? diagnostics(changeActiveTextEditor$, setColor)
+    const diagnosticsDis = diagnostics
+      ? nyanDiagnostics(changeActiveTextEditor$, setColor)
       : undefined;
 
     return () => {
@@ -226,6 +231,7 @@ export const createNyan = () => {
 
       changeTextEditorOba.complete();
       nyanRunSubs.unsubscribe();
+      // nyanCommandSubs.unsubscribe();
     };
   };
 

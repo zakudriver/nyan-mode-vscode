@@ -68,7 +68,7 @@ const diagnosticsNyan = (textEditor: TextEditor, setColor: SetColor) => {
   setColor();
 };
 
-export const diagnostics = (
+export const nyanDiagnostics = (
   changeActiveTextEditor$: Observable<TextEditor | undefined>,
   setColor: SetColor
 ) => {
