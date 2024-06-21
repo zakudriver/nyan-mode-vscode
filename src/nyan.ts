@@ -35,7 +35,7 @@ import { nyanDiagnostics } from "./diagnostics";
 const configObservable = (
   init: NyanModeOptions,
   fn: (config: NyanModeOptions) => (() => void) | void,
-  prefix = nyanConfPrefix
+  prefix = nyanConfPrefix,
 ): (() => void) => {
   const next = () => {
     const conf = getConfig(init, prefix);
@@ -67,7 +67,7 @@ const createNyanBar = ({
 >) => {
   const nyanBar = window.createStatusBarItem(
     nyanAlign === "right" ? StatusBarAlignment.Right : StatusBarAlignment.Left,
-    nyanPriority
+    nyanPriority,
   );
 
   nyanBar.tooltip = nyanTooltip;
@@ -78,7 +78,7 @@ const createNyanBar = ({
       nyanAlign === "right"
         ? StatusBarAlignment.Right
         : StatusBarAlignment.Left,
-      nyanPriority
+      nyanPriority,
     );
 
     percentBar.tooltip = nyanTooltip;
@@ -101,7 +101,7 @@ const createNyanBar = ({
     if (Array.isArray(color)) {
       const [nyanColor, percentColor] = color as [
         ThemeColor | string,
-        ThemeColor | string
+        ThemeColor | string,
       ];
 
       nyanBar.backgroundColor = nyanColor;
@@ -165,7 +165,7 @@ export const createNyan = () => {
         container,
         frame,
         index,
-        nyanRainbowAnimation
+        nyanRainbowAnimation,
       );
 
       nyanBar.text = nyanStr;
@@ -176,7 +176,7 @@ export const createNyan = () => {
     const prevPosit = prevPositionFactory();
 
     const changeTextEditorOba = changeTextEditorObservableFactory(
-      onDidChangeTextEditorFactory(nyanAction, prevPosit)
+      onDidChangeTextEditorFactory(nyanAction, prevPosit),
     );
 
     const nyanRunOba = nyanAnimationObservableFactory(
@@ -184,7 +184,7 @@ export const createNyan = () => {
       {
         nyanAnimation,
         nyanFrames,
-      }
+      },
     ).pipe(
       takeWhile(() => {
         const isActive = !!window.activeTextEditor;
@@ -193,7 +193,7 @@ export const createNyan = () => {
         }
 
         return isActive;
-      })
+      }),
     );
 
     const subscribeNyanRun = () => nyanRunOba.subscribe(nyanRun);
@@ -216,9 +216,9 @@ export const createNyan = () => {
       },
       (e?: TextEditor) => {
         prevPosit(
-          (nyanAction === "scrolling" && e?.visibleRanges[0].end.line) || 0
+          (nyanAction === "scrolling" && e?.visibleRanges[0].end.line) || 0,
         );
-      }
+      },
     );
 
     const diagnosticsDis = diagnostics
@@ -267,7 +267,7 @@ const prevPositionFactory = (): ((num?: number) => number) => {
 
 const onDidChangeTextEditorFactory = (
   action: NyanModeOptions["nyanAction"],
-  prev: (num?: number) => number
+  prev: (num?: number) => number,
 ): ((fn: () => void) => Disposable) =>
   action === "scrolling"
     ? (fn: () => void) =>
@@ -288,7 +288,7 @@ const onDidChangeTextEditorFactory = (
         });
 
 const changeTextEditorObservableFactory = (
-  onDidChange: (fn: () => void) => Disposable
+  onDidChange: (fn: () => void) => Disposable,
 ): Subject<void> => {
   const subject = new Subject<void>();
 
@@ -308,20 +308,20 @@ const nyanAnimationObservableFactory = (
   {
     nyanAnimation,
     nyanFrames,
-  }: Pick<NyanModeOptions, "nyanAnimation" | "nyanFrames">
+  }: Pick<NyanModeOptions, "nyanAnimation" | "nyanFrames">,
 ): Observable<number> => {
   const frameMs = makeFrameMs(nyanFrames);
 
   if (nyanAnimation === "quiet") {
     return oba.pipe(
-      exhaustMap(() => interval(frameMs).pipe(take(nyanEachFrames.length)))
+      exhaustMap(() => interval(frameMs).pipe(take(nyanEachFrames.length))),
     );
   }
 
   if (nyanAnimation === "active") {
     return combineLatest([
       interval(frameMs).pipe(
-        scan((acc) => (acc >= nyanEachFrames.length - 1 ? 0 : ++acc), -1)
+        scan((acc) => (acc >= nyanEachFrames.length - 1 ? 0 : ++acc), -1),
       ),
       oba,
     ]).pipe(map(([$]) => $));
@@ -342,7 +342,7 @@ const nyanIndex = (rate: number, nyanLen: number): number => {
 
 const changeActiveTextEditorFactory = (
   fn: (isActive: boolean) => void,
-  prevPositFn: (e?: TextEditor) => void
+  prevPositFn: (e?: TextEditor) => void,
 ) => {
   return new Observable<TextEditor | undefined>((ob) => {
     const dis = window.onDidChangeActiveTextEditor((e) => {
@@ -380,7 +380,7 @@ const nyanFactory = (
   container: string[],
   frame: number,
   index: number,
-  nyanRainbowAnimation: NyanModeOptions["nyanRainbowAnimation"]
+  nyanRainbowAnimation: NyanModeOptions["nyanRainbowAnimation"],
 ): string => {
   for (let i = 0; i < container.length; i++) {
     if (i < index) {
